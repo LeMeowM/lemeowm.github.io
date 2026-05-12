@@ -1,10 +1,25 @@
-import { EduIntro, EduList } from "../styles/Education.styled";
+import styled from "styled-components";
+import { eduBg } from "../../utils/content";
 import Panel from "../Panel";
+import { Intro } from "../styles/Output.styled";
+
+const EduList = styled.div`
+  margin-bottom: 1rem;
+
+  .title {
+    font-weight: 700;
+    margin-bottom: 0.275rem;
+  }
+
+  .desc {
+    color: ${({ theme }) => theme.colors?.text[200]};
+  }
+`;
 
 const Education: React.FC = () => {
   return (
     <Panel title="education" data-testid="education">
-      <EduIntro>Education</EduIntro>
+      <Intro>Education</Intro>
       {eduBg.map(({ title, desc }) => (
         <EduList key={title}>
           <div className="title">{title}</div>
@@ -14,16 +29,5 @@ const Education: React.FC = () => {
     </Panel>
   );
 };
-
-const eduBg = [
-  {
-    title: "BSc Computer Communication Systems — EPFL",
-    desc: "Écublens, VD | Expected 2027 · GPA 5.5/6 · Ranked 4th of 123 in program (22nd of 355 in IC Faculty)",
-  },
-  {
-    title: "Coursework",
-    desc: "Software architecture, machine learning, digital systems design",
-  },
-];
 
 export default Education;

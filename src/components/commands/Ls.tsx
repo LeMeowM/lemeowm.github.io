@@ -9,7 +9,7 @@ import {
   pathToString,
   FSDir,
 } from "../../utils/filesystem";
-import { Wrapper, UsageDiv } from "../styles/Output.styled";
+import { Wrapper, UsageDiv, ErrorMsg } from "../styles/Output.styled";
 
 // ── Styled components ──────────────────────────────────────────────────────────
 
@@ -28,11 +28,6 @@ const DirEntry = styled.span`
 
 const FileEntry = styled.span`
   color: ${({ theme }) => theme.colors?.text[100]};
-`;
-
-const ErrorMsg = styled.div`
-  margin-top: 0.25rem;
-  margin-bottom: 0.75rem;
 `;
 
 const LongList = styled.div`

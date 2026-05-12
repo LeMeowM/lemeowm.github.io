@@ -31,6 +31,12 @@ type ManPage = {
 };
 
 const pages: Record<string, ManPage> = {
+  about: {
+    synopsis: "about",
+    description:
+      "Display a short biography and overview of skills. Equivalent to 'cat about.txt'.",
+    examples: ["about"],
+  },
   cat: {
     synopsis: "cat <file>",
     description:
@@ -63,6 +69,12 @@ const pages: Record<string, ManPage> = {
     description: "Print text to the terminal. Strips surrounding quotes.",
     examples: ["echo hello world", 'echo "quoted text"'],
   },
+  grep: {
+    synopsis: "grep <pattern> [file.md]",
+    description:
+      "Search blog post content for lines matching a pattern (case-insensitive). An optional second argument narrows the search to a single post by slug (e.g. 'post-title.md').",
+    examples: ["grep crypto", "grep aes lakectf-2025.md", "grep TODO"],
+  },
   help: {
     synopsis: "help",
     description:
@@ -94,6 +106,12 @@ const pages: Record<string, ManPage> = {
     description: "Show the manual page for a command.",
     examples: ["man ls", "man cd", "man open"],
   },
+  motd: {
+    synopsis: "motd",
+    description:
+      "Display the message of the day — a rotating daily tip. The tip array lives in src/utils/content.ts.",
+    examples: ["motd"],
+  },
   neofetch: {
     synopsis: "neofetch",
     description:
@@ -120,6 +138,12 @@ const pages: Record<string, ManPage> = {
     description:
       "Switch the colour theme. Run 'themes' without arguments to list available themes.",
     examples: ["themes", "themes set dark", "themes set ubuntu"],
+  },
+  skills: {
+    synopsis: "skills",
+    description:
+      "Display a breakdown of programming language proficiency levels and domain specialisms. Data lives in src/utils/content.ts.",
+    examples: ["skills"],
   },
   whoami: {
     synopsis: "whoami",

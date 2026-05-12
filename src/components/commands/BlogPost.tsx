@@ -10,6 +10,7 @@
 //   meta string; if present delegates to FileEmbed, otherwise renders a normal
 //   syntax-highlighted block.
 import { useEffect, useRef, useState } from "react";
+import { useReaderKeyboard } from "../../hooks/useReaderKeyboard";
 import ReactDOM from "react-dom";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -117,8 +118,6 @@ const CodeBlock = ({
   );
 };
 
-const STEP = 80;
-
 type Props = { slug: string };
 
 const BlogPost: React.FC<Props> = ({ slug }) => {
@@ -133,48 +132,10 @@ const BlogPost: React.FC<Props> = ({ slug }) => {
   };
 
   useEffect(() => {
-    if (!open) return;
-    overlayRef.current?.focus();
-
-    const handler = (e: KeyboardEvent) => {
-      const el = contentRef.current;
-      if (!el) return;
-      if (e.key === "q" || e.key === "Escape" || (e.key === "c" && e.ctrlKey)) {
-        e.preventDefault();
-        handleClose();
-        return;
-      }
-      switch (e.key) {
-        case "ArrowDown":
-          e.preventDefault();
-          el.scrollBy({ top: STEP });
-          break;
-        case "ArrowUp":
-          e.preventDefault();
-          el.scrollBy({ top: -STEP });
-          break;
-        case " ":
-        case "PageDown":
-          e.preventDefault();
-          el.scrollBy({ top: el.clientHeight * 0.85 });
-          break;
-        case "PageUp":
-          e.preventDefault();
-          el.scrollBy({ top: -el.clientHeight * 0.85 });
-          break;
-        case "Home":
-          e.preventDefault();
-          el.scrollTo({ top: 0 });
-          break;
-        case "End":
-          e.preventDefault();
-          el.scrollTo({ top: el.scrollHeight });
-          break;
-      }
-    };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
+    if (open) overlayRef.current?.focus();
   }, [open]);
+
+  useReaderKeyboard(contentRef, handleClose, open);
 
   if (!post) return <ErrorMsg>{slug}: post not found</ErrorMsg>;
 

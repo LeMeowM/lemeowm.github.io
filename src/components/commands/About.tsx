@@ -1,19 +1,15 @@
-import {
-  AboutWrapper,
-  HighlightAlt,
-  HighlightSpan,
-} from "../styles/About.styled";
+import { AboutWrapper, Highlight } from "../styles/About.styled";
 
 const About: React.FC = () => {
   return (
     <AboutWrapper data-testid="about">
       <p>
-        Hi, my name is <HighlightSpan>Hugo Noublanche</HighlightSpan>!
+        Hi, my name is <Highlight>Hugo Noublanche</Highlight>!
       </p>
       <p>
-        I&apos;m a <HighlightAlt>Computer Communication Systems</HighlightAlt>{" "}
-        student at EPFL (BSc, expected 2027), ranked 4th of 123 in my program
-        with a GPA of 5.5/6.
+        I&apos;m a <Highlight>Computer Communication Systems</Highlight> student
+        at EPFL (BSc, expected 2027), ranked 4th of 123 in my program with a GPA
+        of 5.5/6.
       </p>
       <p>
         I specialise in software verification, reverse engineering,

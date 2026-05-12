@@ -7,7 +7,6 @@
 //
 // Path resolution supports arbitrary depth (/a/b/c) and absolute paths (/blog/…).
 import { useContext } from "react";
-import styled from "styled-components";
 import { termContext } from "../Terminal";
 import {
   filesystem,
@@ -24,12 +23,7 @@ import Experience from "./Experience";
 import Projects from "./Projects";
 import Socials from "./Socials";
 import SourceViewer from "./SourceViewer";
-import { UsageDiv } from "../styles/Output.styled";
-
-const ErrorMsg = styled.div`
-  margin-top: 0.25rem;
-  margin-bottom: 0.75rem;
-`;
+import { UsageDiv, ErrorMsg } from "../styles/Output.styled";
 
 const contentMap: Record<string, React.ReactNode> = {
   about: <About />,

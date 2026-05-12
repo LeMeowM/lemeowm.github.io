@@ -2,7 +2,7 @@ import { useContext } from "react";
 import styled from "styled-components";
 import { termContext } from "../Terminal";
 import { filesystem, FSDir, FSFile } from "../../utils/filesystem";
-import { UsageDiv } from "../styles/Output.styled";
+import { UsageDiv, NoResults } from "../styles/Output.styled";
 
 const ResultLine = styled.div`
   color: ${({ theme }) => theme.colors?.text[100]};
@@ -11,12 +11,6 @@ const ResultLine = styled.div`
 
 const DirColor = styled.span`
   color: ${({ theme }) => theme.colors?.primary};
-`;
-
-const NoResults = styled.div`
-  color: ${({ theme }) => theme.colors?.text[300]};
-  margin-top: 0.25rem;
-  margin-bottom: 0.75rem;
 `;
 
 type Entry = { path: string; type: "file" | "dir" };

@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import Panel from "../Panel";
 import {
   ItemList,
@@ -8,12 +7,9 @@ import {
   ItemDesc,
   ItemThumb,
 } from "../styles/ItemCard.styled";
+import { Intro } from "../styles/Output.styled";
 
 type Job = { title: string; desc: string; thumbnail?: string };
-
-const Intro = styled.div`
-  margin-bottom: 0.75rem;
-`;
 
 const Experience: React.FC = () => {
   return (

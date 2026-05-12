@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import { projects } from "../../utils/content";
 import Panel from "../Panel";
 import {
@@ -11,12 +10,7 @@ import {
   ItemHint,
   ItemThumb,
 } from "../styles/ItemCard.styled";
-
-const Intro = styled.div`
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
-  line-height: 1.5rem;
-`;
+import { Intro } from "../styles/Output.styled";
 
 const Projects: React.FC = () => {
   return (

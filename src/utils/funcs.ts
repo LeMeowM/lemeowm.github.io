@@ -1,6 +1,7 @@
 import theme from "../components/styles/themes";
 import { filesystem, getDirChildren, buildPath } from "./filesystem";
 import { openTargets } from "./content";
+import { blogPosts } from "./blog";
 import { commandNames } from "../commands/meta";
 
 /** Returns a string of non-breaking spaces for aligning `help` output columns. */
@@ -168,6 +169,23 @@ export const argTab = (
     const matches = commandNames.filter(c => c.startsWith(partial));
     if (matches.length === 1) {
       setInputVal(`man ${matches[0]}`);
+      return [];
+    }
+    if (matches.length > 1) {
+      setHints(matches);
+      return [];
+    }
+    return [];
+  }
+
+  // grep <pattern> <slug.md> — tab complete blog post slug on second arg
+  const grepParts = inputVal.split(" ");
+  if (grepParts[0] === "grep" && grepParts.length === 3) {
+    const partial = grepParts[2];
+    const slugs = blogPosts.map(p => `${p.slug}.md`);
+    const matches = slugs.filter(s => s.startsWith(partial));
+    if (matches.length === 1) {
+      setInputVal(`grep ${grepParts[1]} ${matches[0]}`);
       return [];
     }
     if (matches.length > 1) {

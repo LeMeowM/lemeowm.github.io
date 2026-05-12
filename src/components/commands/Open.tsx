@@ -1,14 +1,8 @@
 import { useContext, useEffect } from "react";
-import styled from "styled-components";
 import { termContext } from "../Terminal";
 import { openTargets } from "../../utils/content";
 import { pathToString } from "../../utils/filesystem";
-import { UsageDiv, Wrapper } from "../styles/Output.styled";
-
-const ErrorMsg = styled.div`
-  margin-top: 0.25rem;
-  margin-bottom: 0.75rem;
-`;
+import { UsageDiv, Wrapper, ErrorMsg } from "../styles/Output.styled";
 
 const resolveUrl = (arg: string, cwd: string[]): string | null => {
   if (arg.startsWith("http://") || arg.startsWith("https://")) return arg;

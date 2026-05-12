@@ -1,13 +1,7 @@
-import styled from "styled-components";
 import { Cmd, CmdDesc, CmdList, HelpWrapper } from "../styles/Help.styled";
 import { Link } from "../styles/Welcome.styled";
 import { socials } from "../../utils/content";
-
-const Intro = styled.div`
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
-  line-height: 1.5rem;
-`;
+import { Intro } from "../styles/Output.styled";
 
 const Socials: React.FC = () => {
   return (

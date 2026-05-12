@@ -1,5 +1,6 @@
 import styled, { useTheme } from "styled-components";
 import Panel from "../Panel";
+import { languages, domains } from "../../utils/content";
 
 const startTime = Date.now();
 
@@ -85,8 +86,8 @@ const Neofetch: React.FC = () => {
     ["resolution", resolution],
     ["theme", theme.name],
     ["uptime", uptime],
-    ["langs", "Python, Rust, Java, C, Scala, TS, Lua, SQL"],
-    ["domains", "RE · Crypto · Systems · Verification"],
+    ["langs", languages.map(l => l.name).join(", ")],
+    ["domains", domains.join(" · ")],
   ];
 
   return (

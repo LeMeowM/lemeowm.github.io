@@ -2,7 +2,7 @@ import { useContext } from "react";
 import styled from "styled-components";
 import { termContext } from "../Terminal";
 import { blogPosts } from "../../utils/blog";
-import { UsageDiv } from "../styles/Output.styled";
+import { UsageDiv, NoResults } from "../styles/Output.styled";
 
 const ResultBlock = styled.div`
   margin-bottom: 0.5rem;
@@ -23,12 +23,6 @@ const Highlight = styled.mark`
   background: none;
   color: ${({ theme }) => theme.colors?.primary};
   font-weight: 700;
-`;
-
-const NoResults = styled.div`
-  color: ${({ theme }) => theme.colors?.text[300]};
-  margin-top: 0.25rem;
-  margin-bottom: 0.75rem;
 `;
 
 function highlightMatch(line: string, pattern: string): React.ReactNode {

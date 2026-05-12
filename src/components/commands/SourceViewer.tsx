@@ -9,6 +9,8 @@ import {
   ReaderStatusBar,
   TitleBar,
 } from "../styles/BlogReader.styled";
+import { detectLang } from "../../utils/code";
+import { useReaderKeyboard } from "../../hooks/useReaderKeyboard";
 
 const Breadcrumb = styled.div`
   color: ${({ theme }) => theme.colors?.text[300]};
@@ -25,40 +27,6 @@ const DownloadLink = styled.a`
     text-decoration: underline;
   }
 `;
-
-const EXT_TO_LANG: Record<string, string> = {
-  py: "python",
-  sage: "python",
-  rs: "rust",
-  c: "c",
-  h: "c",
-  cpp: "cpp",
-  cc: "cpp",
-  ts: "typescript",
-  tsx: "typescript",
-  js: "javascript",
-  jsx: "javascript",
-  sh: "bash",
-  bash: "bash",
-  zsh: "bash",
-  md: "markdown",
-  json: "json",
-  toml: "toml",
-  yaml: "yaml",
-  yml: "yaml",
-  go: "go",
-  java: "java",
-  rb: "ruby",
-  php: "php",
-  sql: "sql",
-};
-
-function detectLang(filename: string): string {
-  const ext = filename.split(".").pop()?.toLowerCase() ?? "";
-  return EXT_TO_LANG[ext] ?? "text";
-}
-
-const STEP = 80;
 
 type Props = { path: string; filename: string };
 
@@ -82,48 +50,10 @@ const SourceViewer: React.FC<Props> = ({ path, filename }) => {
   };
 
   useEffect(() => {
-    if (!open) return;
-    overlayRef.current?.focus();
-
-    const handler = (e: KeyboardEvent) => {
-      const el = contentRef.current;
-      if (!el) return;
-      if (e.key === "q" || e.key === "Escape" || (e.key === "c" && e.ctrlKey)) {
-        e.preventDefault();
-        handleClose();
-        return;
-      }
-      switch (e.key) {
-        case "ArrowDown":
-          e.preventDefault();
-          el.scrollBy({ top: STEP });
-          break;
-        case "ArrowUp":
-          e.preventDefault();
-          el.scrollBy({ top: -STEP });
-          break;
-        case " ":
-        case "PageDown":
-          e.preventDefault();
-          el.scrollBy({ top: el.clientHeight * 0.85 });
-          break;
-        case "PageUp":
-          e.preventDefault();
-          el.scrollBy({ top: -el.clientHeight * 0.85 });
-          break;
-        case "Home":
-          e.preventDefault();
-          el.scrollTo({ top: 0 });
-          break;
-        case "End":
-          e.preventDefault();
-          el.scrollTo({ top: el.scrollHeight });
-          break;
-      }
-    };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
+    if (open) overlayRef.current?.focus();
   }, [open]);
+
+  useReaderKeyboard(contentRef, handleClose, open);
 
   return (
     <>
