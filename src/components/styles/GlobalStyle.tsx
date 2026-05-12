@@ -25,6 +25,11 @@ const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
     display: block;
   }
 
+  :root {
+    --primary: ${({ theme }) => theme.colors?.primary};
+    --accent-color: ${({ theme }) => theme.colors?.primary};
+  }
+
   body {
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 500;

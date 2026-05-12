@@ -1,9 +1,9 @@
 import { EduIntro, EduList } from "../styles/Education.styled";
-import { Wrapper } from "../styles/Output.styled";
+import Panel from "../Panel";
 
 const Experience: React.FC = () => {
   return (
-    <Wrapper data-testid="experience">
+    <Panel title="experience" data-testid="experience">
       <EduIntro>Work experience</EduIntro>
       {jobs.map(({ title, desc }) => (
         <EduList key={title}>
@@ -11,7 +11,7 @@ const Experience: React.FC = () => {
           <div className="desc">{desc}</div>
         </EduList>
       ))}
-    </Wrapper>
+    </Panel>
   );
 };
 

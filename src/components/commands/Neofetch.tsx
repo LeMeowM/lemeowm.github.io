@@ -1,4 +1,5 @@
 import styled, { useTheme } from "styled-components";
+import Panel from "../Panel";
 
 const startTime = Date.now();
 
@@ -89,25 +90,27 @@ const Neofetch: React.FC = () => {
   ];
 
   return (
-    <Container>
-      <Art>{CAT_ART}</Art>
-      <Info>
-        <div>
-          <Label>hugo</Label>@<Label>lemeowm.github.io</Label>
-        </div>
-        <Sep>{"─".repeat(32)}</Sep>
-        {rows.map(([label, value]) => (
-          <div key={label}>
-            <Label>{label}</Label>: {value}
+    <Panel title="neofetch">
+      <Container>
+        <Art>{CAT_ART}</Art>
+        <Info>
+          <div>
+            <Label>hugo</Label>@<Label>lemeowm.github.io</Label>
           </div>
-        ))}
-        <Swatches>
-          {swatchColors.map(c => (
-            <Swatch key={c} bg={c} title={c} />
+          <Sep>{"─".repeat(32)}</Sep>
+          {rows.map(([label, value]) => (
+            <div key={label}>
+              <Label>{label}</Label>: {value}
+            </div>
           ))}
-        </Swatches>
-      </Info>
-    </Container>
+          <Swatches>
+            {swatchColors.map(c => (
+              <Swatch key={c} bg={c} title={c} />
+            ))}
+          </Swatches>
+        </Info>
+      </Container>
+    </Panel>
   );
 };
 

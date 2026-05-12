@@ -1,7 +1,17 @@
-import styled from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 
-export const OutputContainer = styled.div`
+const terminalReveal = keyframes`
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: translateY(0);   }
+`;
+
+export const OutputContainer = styled.div<{ $isLatest?: boolean }>`
   padding-bottom: 0.25rem;
+  ${({ $isLatest }) =>
+    $isLatest &&
+    css`
+      animation: ${terminalReveal} 0.12s ease-out both;
+    `}
 `;
 
 export const Wrapper = styled.div`

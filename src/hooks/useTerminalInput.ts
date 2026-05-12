@@ -18,6 +18,7 @@ export const useTerminalInput = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputVal, setInputVal] = useState("");
   const [hints, setHints] = useState<string[]>([]);
+  const [hintCursor, setHintCursor] = useState(-1);
   const [pointer, setPointer] = useState(-1);
 
   // Focus input whenever anything on the page is clicked
@@ -37,6 +38,8 @@ export const useTerminalInput = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setRerender(false);
       setInputVal(e.target.value);
+      setHints([]);
+      setHintCursor(-1);
     },
     [setRerender]
   );
@@ -49,6 +52,17 @@ export const useTerminalInput = ({
     if (e.key === "Tab" || ctrlI) {
       e.preventDefault();
       if (!inputVal) return;
+
+      if (hints.length > 0) {
+        // Cycle through already-displayed hints
+        const next = (hintCursor + 1) % hints.length;
+        setHintCursor(next);
+        const parts = inputVal.split(" ");
+        setInputVal(
+          parts.length > 1 ? `${parts[0]} ${hints[next]}` : hints[next]
+        );
+        return;
+      }
 
       let hintsCmds: string[] = [];
       commandNames.forEach(name => {
@@ -66,6 +80,11 @@ export const useTerminalInput = ({
 
       if (hintsCmds.length > 1) {
         setHints(hintsCmds);
+        setHintCursor(0);
+        const parts = inputVal.split(" ");
+        setInputVal(
+          parts.length > 1 ? `${parts[0]} ${hintsCmds[0]}` : hintsCmds[0]
+        );
       } else if (hintsCmds.length === 1) {
         const parts = inputVal.split(" ");
         setInputVal(
@@ -74,19 +93,20 @@ export const useTerminalInput = ({
             : hintsCmds[0]
         );
         setHints([]);
+        setHintCursor(-1);
       }
     }
 
     if (ctrlL) {
       clearHistory();
       setHints([]);
+      setHintCursor(-1);
     }
 
     if (e.key === "ArrowUp") {
       if (pointer + 1 >= cmdHistory.length) return;
       setInputVal(cmdHistory[pointer + 1].cmd);
       setPointer(p => p + 1);
-      inputRef.current?.blur();
     }
 
     if (e.key === "ArrowDown") {
@@ -98,13 +118,13 @@ export const useTerminalInput = ({
       }
       setInputVal(cmdHistory[pointer - 1].cmd);
       setPointer(p => p - 1);
-      inputRef.current?.blur();
     }
   };
 
   const resetInput = () => {
     setInputVal("");
     setHints([]);
+    setHintCursor(-1);
     setPointer(-1);
   };
 

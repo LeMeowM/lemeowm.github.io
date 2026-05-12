@@ -1,9 +1,9 @@
 import { EduIntro, EduList } from "../styles/Education.styled";
-import { Wrapper } from "../styles/Output.styled";
+import Panel from "../Panel";
 
 const Education: React.FC = () => {
   return (
-    <Wrapper data-testid="education">
+    <Panel title="education" data-testid="education">
       <EduIntro>Education</EduIntro>
       {eduBg.map(({ title, desc }) => (
         <EduList key={title}>
@@ -11,7 +11,7 @@ const Education: React.FC = () => {
           <div className="desc">{desc}</div>
         </EduList>
       ))}
-    </Wrapper>
+    </Panel>
   );
 };
 

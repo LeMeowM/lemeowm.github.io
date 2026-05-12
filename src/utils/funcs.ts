@@ -32,6 +32,29 @@ export const checkThemeSwitch = (
   currentCommand.length < 4 &&
   themes.includes(currentCommand[2]);
 
+const resolvePartialDir = (
+  cwd: string[],
+  partial: string
+): { dirPath: string[]; filePart: string; prefix: string } => {
+  const lastSlash = partial.lastIndexOf("/");
+  if (lastSlash === -1) return { dirPath: cwd, filePart: partial, prefix: "" };
+
+  const dirPart = partial.slice(0, lastSlash);
+  const filePart = partial.slice(lastSlash + 1);
+  const prefix = partial.slice(0, lastSlash + 1);
+
+  let dirPath: string[];
+  if (dirPart === "" || dirPart === "/") {
+    dirPath = ["~"];
+  } else if (dirPart.startsWith("/")) {
+    dirPath = ["~", ...dirPart.slice(1).split("/").filter(Boolean)];
+  } else {
+    dirPath = [...cwd, ...dirPart.split("/").filter(Boolean)];
+  }
+
+  return { dirPath, filePart, prefix };
+};
+
 export const argTab = (
   inputVal: string,
   setInputVal: (value: string) => void,
@@ -68,50 +91,53 @@ export const argTab = (
   const cdParts = inputVal.split(" ");
   if (inputVal === "cd " || (cdParts[0] === "cd" && cdParts.length === 2)) {
     const partial = inputVal === "cd " ? "" : cdParts[1];
-    const dirs = getDirChildren(cwd, filesystem, "dir").map(e => e.name);
-    const matches = dirs.filter(d => d.startsWith(partial));
+    const { dirPath, filePart, prefix } = resolvePartialDir(cwd, partial);
+    const dirs = getDirChildren(dirPath, filesystem, "dir").map(e => e.name);
+    const matches = dirs.filter(d => d.startsWith(filePart));
     if (matches.length === 1) {
-      setInputVal(`cd ${matches[0]}`);
+      setInputVal(`cd ${prefix}${matches[0]}`);
       return [];
     }
     if (matches.length > 1) {
-      setHints(matches);
+      setHints(matches.map(m => prefix + m));
       return [];
     }
     return [];
   }
 
-  // cat <file> — tab complete files in current dir
+  // cat <file> — tab complete files (supports path prefix like /blog/foo)
   const catParts = inputVal.split(" ");
   if (inputVal === "cat " || (catParts[0] === "cat" && catParts.length === 2)) {
     const partial = inputVal === "cat " ? "" : catParts[1];
-    const files = getDirChildren(cwd, filesystem, "file").map(e => e.name);
-    const matches = files.filter(f => f.startsWith(partial));
+    const { dirPath, filePart, prefix } = resolvePartialDir(cwd, partial);
+    const files = getDirChildren(dirPath, filesystem, "file").map(e => e.name);
+    const matches = files.filter(f => f.startsWith(filePart));
     if (matches.length === 1) {
-      setInputVal(`cat ${matches[0]}`);
+      setInputVal(`cat ${prefix}${matches[0]}`);
       return [];
     }
     if (matches.length > 1) {
-      setHints(matches);
+      setHints(matches.map(m => prefix + m));
       return [];
     }
     return [];
   }
 
-  // ls <dir> — tab complete all entries
+  // ls <dir> — tab complete all entries (supports path prefix)
   const lsParts = inputVal.split(" ");
   if (inputVal === "ls " || (lsParts[0] === "ls" && lsParts.length === 2)) {
     const partial = inputVal === "ls " ? "" : lsParts[1];
-    const entries = getDirChildren(cwd, filesystem).map(e =>
+    const { dirPath, filePart, prefix } = resolvePartialDir(cwd, partial);
+    const entries = getDirChildren(dirPath, filesystem).map(e =>
       e.type === "dir" ? e.name + "/" : e.name
     );
-    const matches = entries.filter(n => n.startsWith(partial));
+    const matches = entries.filter(n => n.startsWith(filePart));
     if (matches.length === 1) {
-      setInputVal(`ls ${matches[0]}`);
+      setInputVal(`ls ${prefix}${matches[0]}`);
       return [];
     }
     if (matches.length > 1) {
-      setHints(matches);
+      setHints(matches.map(m => prefix + m));
       return [];
     }
     return [];

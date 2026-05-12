@@ -30,7 +30,17 @@ export const commandMeta: CommandMeta[] = [
   { name: "open", desc: "open a file or URL", tab: 9, acceptsArgs: true },
   { name: "pwd", desc: "print working directory", tab: 10 },
   { name: "themes", desc: "check available themes", tab: 7, acceptsArgs: true },
+  { name: "about", desc: "about Hugo", tab: 6 },
   { name: "whoami", desc: "about current user", tab: 7 },
+  { name: "skills", desc: "show languages and domains", tab: 7 },
+  { name: "grep", desc: "search blog post content", tab: 7, acceptsArgs: true },
+  {
+    name: "find",
+    desc: "find files in the filesystem",
+    tab: 7,
+    acceptsArgs: true,
+  },
+  { name: "motd", desc: "show tip of the day", tab: 5 },
   { name: "welcome", desc: "", tab: 0, hidden: true },
 ];
 

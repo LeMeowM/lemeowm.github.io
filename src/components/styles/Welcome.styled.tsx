@@ -7,12 +7,6 @@ export const HeroContainer = styled.div`
   @media (max-width: 932px) {
     margin-bottom: 1.5rem;
   }
-
-  div {
-    @media (min-width: 1024px) {
-      flex-basis: 50%;
-    }
-  }
 `;
 
 export const PreName = styled.pre`

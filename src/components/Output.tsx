@@ -18,7 +18,10 @@ const Output: React.FC<Props> = ({ index, cmd }) => {
     return <UsageDiv data-testid="usage-output">Usage: {cmd}</UsageDiv>;
 
   return (
-    <OutputContainer data-testid={index === 0 ? "latest-output" : null}>
+    <OutputContainer
+      data-testid={index === 0 ? "latest-output" : null}
+      $isLatest={index === 0}
+    >
       {entry.component}
     </OutputContainer>
   );

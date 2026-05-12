@@ -1,3 +1,5 @@
+import { blogPosts } from "./blog";
+
 export type FSFile = {
   type: "file";
   content: string;
@@ -8,15 +10,71 @@ export type FSDir = {
   children: Record<string, FSFile | FSDir>;
 };
 
+const blogChildren: Record<string, FSFile> = {
+  "README.txt": { type: "file", content: "blog" },
+  ...Object.fromEntries(
+    blogPosts.map(post => [
+      `${post.slug}.md`,
+      { type: "file", content: `blog-post:${post.slug}` },
+    ])
+  ),
+};
+
+const filesChildren: Record<string, FSDir | FSFile> = {
+  "lakectf-2025": {
+    type: "dir",
+    children: {
+      "crypto-Conversation": {
+        type: "dir",
+        children: {
+          Dockerfile: {
+            type: "file",
+            content:
+              "source-file:/files/lakectf-2025/crypto-Conversation/Dockerfile",
+          },
+          "chall.py": {
+            type: "file",
+            content:
+              "source-file:/files/lakectf-2025/crypto-Conversation/chall.py",
+          },
+          "challenge.yml": {
+            type: "file",
+            content:
+              "source-file:/files/lakectf-2025/crypto-Conversation/challenge.yml",
+          },
+          "compose.yaml": {
+            type: "file",
+            content:
+              "source-file:/files/lakectf-2025/crypto-Conversation/compose.yaml",
+          },
+          "fancy.py": {
+            type: "file",
+            content:
+              "source-file:/files/lakectf-2025/crypto-Conversation/fancy.py",
+          },
+          "secret.py": {
+            type: "file",
+            content:
+              "source-file:/files/lakectf-2025/crypto-Conversation/secret.py",
+          },
+          "solve.sage": {
+            type: "file",
+            content:
+              "source-file:/files/lakectf-2025/crypto-Conversation/solve.sage",
+          },
+        },
+      },
+    },
+  },
+};
+
 export const filesystem: FSDir = {
   type: "dir",
   children: {
     "about.txt": { type: "file", content: "about" },
     blog: {
       type: "dir",
-      children: {
-        "README.txt": { type: "file", content: "blog" },
-      },
+      children: blogChildren,
     },
     contact: {
       type: "dir",
@@ -43,6 +101,7 @@ export const filesystem: FSDir = {
         "README.txt": { type: "file", content: "projects" },
       },
     },
+    files: { type: "dir", children: filesChildren },
   },
 };
 

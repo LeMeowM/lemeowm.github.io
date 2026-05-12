@@ -15,8 +15,12 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "asciify-engine": "^1.0.118",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-markdown": "^10.1.0",
+    "react-syntax-highlighter": "^16.1.1",
     "styled-components": "^5.3.10",
     "styled-normalize": "^8.0.7"
   },

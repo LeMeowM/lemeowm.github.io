@@ -11,13 +11,6 @@ export type Social = {
   url: string;
 };
 
-export type BlogPost = {
-  id: number;
-  title: string;
-  url: string;
-  date: string;
-};
-
 export const projects: Project[] = [
   {
     id: 1,
@@ -58,19 +51,13 @@ export const socials: Social[] = [
   },
 ];
 
-export const blogPosts: BlogPost[] = [
-  {
-    id: 1,
-    title: "Coming soon",
-    url: "#",
-    date: "—",
-  },
-];
+export { blogPosts } from "./blog";
+export type { BlogPost } from "./blog";
 
 // Openable targets per directory
 export const openTargets: Record<string, Record<string, string>> = {
   projects: Object.fromEntries(projects.map(p => [String(p.id), p.url])),
-  blog: Object.fromEntries(blogPosts.map(p => [String(p.id), p.url])),
+  blog: {},
   contact: {
     "email.txt": "mailto:hugo.noublanche@epfl.ch",
     ...Object.fromEntries(socials.map(s => [String(s.id), s.url])),

@@ -1,4 +1,5 @@
 import React from "react";
+import About from "../components/commands/About";
 import Cat from "../components/commands/Cat";
 import Cd from "../components/commands/Cd";
 import Clear from "../components/commands/Clear";
@@ -14,11 +15,16 @@ import Pwd from "../components/commands/Pwd";
 import Themes from "../components/commands/Themes";
 import Welcome from "../components/commands/Welcome";
 import GeneralOutput from "../components/commands/GeneralOutput";
+import Skills from "../components/commands/Skills";
+import Grep from "../components/commands/Grep";
+import Find from "../components/commands/Find";
+import Motd from "../components/commands/Motd";
 import { commandMeta, CommandMeta } from "./meta";
 
 export type CommandDef = CommandMeta & { component: React.ReactElement };
 
 const components: Record<string, React.ReactElement> = {
+  about: <About />,
   cat: <Cat />,
   cd: <Cd />,
   clear: <Clear />,
@@ -33,6 +39,10 @@ const components: Record<string, React.ReactElement> = {
   pwd: <Pwd />,
   themes: <Themes />,
   whoami: <GeneralOutput>visitor</GeneralOutput>,
+  skills: <Skills />,
+  grep: <Grep />,
+  find: <Find />,
+  motd: <Motd />,
   welcome: <Welcome />,
 };
 

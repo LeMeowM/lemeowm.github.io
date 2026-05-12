@@ -6,10 +6,11 @@ import {
 } from "../styles/Projects.styled";
 import { Link } from "../styles/Welcome.styled";
 import { projects } from "../../utils/content";
+import Panel from "../Panel";
 
 const Projects: React.FC = () => {
   return (
-    <div data-testid="projects">
+    <Panel title="projects" data-testid="projects">
       <ProjectsIntro>
         Here are some of my projects — use &apos;open &lt;n&gt;&apos; to visit
         one.
@@ -24,7 +25,7 @@ const Projects: React.FC = () => {
           <ProjectDesc>{desc}</ProjectDesc>
         </ProjectContainer>
       ))}
-    </div>
+    </Panel>
   );
 };
 

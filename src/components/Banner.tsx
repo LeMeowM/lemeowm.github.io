@@ -1,5 +1,9 @@
 import styled from "styled-components";
 
+type Props = {
+  onCommand: (cmd: string) => void;
+};
+
 const BannerWrapper = styled.header`
   padding: 0.5rem 1.25rem;
   border-bottom: 1px solid ${({ theme }) => theme.colors?.text[300]};
@@ -30,21 +34,59 @@ const Nav = styled.nav`
   }
 `;
 
+const NavCmd = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  letter-spacing: inherit;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors?.primary};
+  }
+`;
+
 const Dot = styled.span`
   margin: 0 0.4rem;
   opacity: 0.5;
 `;
 
-const Banner = () => (
+const Avatar = styled.img`
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 1px solid ${({ theme }) => theme.colors?.primary};
+  filter: grayscale(40%);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  flex-shrink: 0;
+  object-fit: cover;
+
+  @media (max-width: 550px) {
+    display: none;
+  }
+`;
+
+const navItems: { label: string; cmd: string }[] = [
+  { label: "ls", cmd: "ls" },
+  { label: "about", cmd: "about" },
+  { label: "projects", cmd: "cd projects" },
+  { label: "cv", cmd: "cv" },
+];
+
+const Banner: React.FC<Props> = ({ onCommand }) => (
   <BannerWrapper>
-    <span>
+    <span style={{ display: "flex", alignItems: "center" }}>
+      <Avatar src="/Profile.webp" alt="Hugo" />
       <User>visitor</User>@<Host>lemeowm.github.io</Host>:~$
     </span>
     <Nav>
-      {["ls", "about", "projects", "cv"].map((cmd, i, arr) => (
-        <span key={cmd}>
-          {cmd}
-          {i < arr.length - 1 && <Dot>·</Dot>}
+      {navItems.map(({ label, cmd }, i) => (
+        <span key={label}>
+          <NavCmd onClick={() => onCommand(cmd)}>{label}</NavCmd>
+          {i < navItems.length - 1 && <Dot>·</Dot>}
         </span>
       ))}
     </Nav>

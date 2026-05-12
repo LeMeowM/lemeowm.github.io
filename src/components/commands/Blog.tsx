@@ -1,27 +1,43 @@
-import { ProjectsIntro } from "../styles/Projects.styled";
-import { Cmd, CmdDesc, CmdList, HelpWrapper } from "../styles/Help.styled";
-import { Link } from "../styles/Welcome.styled";
+import styled from "styled-components";
+import { Cmd, CmdDesc, CmdList } from "../styles/Help.styled";
 import { blogPosts } from "../../utils/content";
+import Panel from "../Panel";
+
+const Hint = styled.div`
+  color: ${({ theme }) => theme.colors?.text[300]};
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+`;
+
+const CatHint = styled.span`
+  opacity: 0.6;
+  font-size: 0.875rem;
+`;
 
 const Blog: React.FC = () => {
+  if (blogPosts.length === 0) {
+    return (
+      <Panel title="blog" data-testid="blog">
+        <Hint>No posts yet. Check back soon.</Hint>
+      </Panel>
+    );
+  }
+
   return (
-    <HelpWrapper data-testid="blog">
-      <ProjectsIntro>
-        Latest posts — use &apos;open &lt;n&gt;&apos; to read one.
-      </ProjectsIntro>
-      {blogPosts.map(({ id, title, url, date }) => (
+    <Panel title="blog" data-testid="blog">
+      <Hint>use &apos;cat &lt;slug&gt;.md&apos; to read a post</Hint>
+      {blogPosts.map(({ id, slug, title, date }) => (
         <CmdList key={id}>
           <Cmd>{id}.</Cmd>
           &nbsp;
           <CmdDesc>
-            <Link href={url} target="_blank" rel="noopener noreferrer">
-              {title}
-            </Link>
-            &nbsp;&mdash;&nbsp;{date}
+            {title} &mdash; {date}
+            <br />
+            <CatHint>cat {slug}.md</CatHint>
           </CmdDesc>
         </CmdList>
       ))}
-    </HelpWrapper>
+    </Panel>
   );
 };
 

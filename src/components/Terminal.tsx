@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import Output from "./Output";
 import TermInfo from "./TermInfo";
 import {
@@ -18,6 +18,12 @@ import ErrorBoundary from "./ErrorBoundary";
 
 export type { CmdEntry } from "../commands/meta";
 
+export type TerminalProps = {
+  onCwdChange?: (cwd: string[]) => void;
+  externalCommand?: string | null;
+  onCommandExecuted?: () => void;
+};
+
 export type Term = {
   arg: string[];
   history: CmdEntry[];
@@ -36,17 +42,44 @@ export const termContext = createContext<Term>({
   clearHistory: () => undefined,
 });
 
-const Terminal = () => {
+const Terminal: React.FC<TerminalProps> = ({
+  onCwdChange,
+  externalCommand,
+  onCommandExecuted,
+}) => {
   const [cmdHistory, setCmdHistory] = useState<CmdEntry[]>([
     { cmd: "welcome", cwd: ["~"] },
   ]);
   const [cwd, setCwd] = useState<string[]>(["~"]);
   const [rerender, setRerender] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const clearHistory = () => setCmdHistory([]);
 
   const { inputRef, inputVal, hints, handleChange, handleKeyDown, resetInput } =
     useTerminalInput({ cmdHistory, cwd, clearHistory, setRerender });
+
+  const updateCwd = (newCwd: string[]) => {
+    setCwd(newCwd);
+    onCwdChange?.(newCwd);
+  };
+
+  useEffect(() => {
+    if (wrapperRef.current) wrapperRef.current.scrollTop = 0;
+  }, [cmdHistory]);
+
+  useEffect(() => {
+    if (!externalCommand) return;
+    const trimmed = externalCommand.trim();
+    const parts = trimmed.split(/\s+/).filter(Boolean);
+    if (parts[0] === "cd") {
+      const newPath = resolvePath(cwd, parts[1], filesystem);
+      if (newPath) updateCwd(newPath);
+    }
+    setCmdHistory(prev => [{ cmd: trimmed, cwd: [...cwd] }, ...prev]);
+    setRerender(true);
+    onCommandExecuted?.();
+  }, [externalCommand]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,7 +88,7 @@ const Terminal = () => {
 
     if (parts[0] === "cd") {
       const newPath = resolvePath(cwd, parts[1], filesystem);
-      if (newPath) setCwd(newPath);
+      if (newPath) updateCwd(newPath);
     }
 
     setCmdHistory([{ cmd: trimmed, cwd: [...cwd] }, ...cmdHistory]);
@@ -64,7 +97,7 @@ const Terminal = () => {
   };
 
   return (
-    <Wrapper data-testid="terminal-wrapper">
+    <Wrapper ref={wrapperRef} data-testid="terminal-wrapper">
       {hints.length > 1 && (
         <div>
           {hints.map(hCmd => (
@@ -105,8 +138,9 @@ const Terminal = () => {
           cwd: entryCwd,
           clearHistory,
         };
+        const stableKey = cmdHistory.length - 1 - index;
         return (
-          <div key={`${cmdH}_${index}`}>
+          <div key={stableKey}>
             {!isWelcome && (
               <div>
                 <TermInfo cwd={entryCwd} />
@@ -116,7 +150,7 @@ const Terminal = () => {
               </div>
             )}
             {registryEntry ? (
-              <ErrorBoundary key={index} cmd={commandArray[0]}>
+              <ErrorBoundary key={stableKey} cmd={commandArray[0]}>
                 <termContext.Provider value={contextValue}>
                   <Output index={index} cmd={commandArray[0]} />
                 </termContext.Provider>
