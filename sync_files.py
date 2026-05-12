@@ -1,7 +1,18 @@
 #!/usr/bin/env python3
 """
-Sync public/files/ into filesChildren in src/utils/filesystem.ts.
-Run from the repo root:  python sync_files.py
+Sync public/files/ into the filesChildren block in src/utils/filesystem.ts.
+
+This script is the canonical way to register source files for the terminal.
+Do NOT hand-edit the filesChildren block — run this script instead.
+
+Usage (from repo root):
+  python3 sync_files.py
+
+Workflow:
+  1. Drop files into public/files/<ctf-name>/  (any directory depth)
+  2. Run this script
+  3. Files become accessible via `cat files/…` in the terminal and
+     embeddable in blog posts via ```lang src=/files/… ```
 """
 
 from pathlib import Path

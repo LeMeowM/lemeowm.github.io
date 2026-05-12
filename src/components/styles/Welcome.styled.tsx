@@ -12,6 +12,7 @@ export const HeroContainer = styled.div`
 export const PreName = styled.pre`
   margin-top: 0.5rem;
   margin-bottom: 1.5rem;
+  color: ${({ theme }) => theme.colors?.primary};
 
   @media (max-width: 550px) {
     display: none;
@@ -25,6 +26,7 @@ export const PreWrapper = styled.div`
 export const PreNameMobile = styled.pre`
   margin-top: 0.5rem;
   margin-bottom: 1.5rem;
+  color: ${({ theme }) => theme.colors?.primary};
 
   @media (min-width: 550px) {
     display: none;

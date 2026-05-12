@@ -1,3 +1,14 @@
+// BlogPost renders a full-screen overlay (via React portal) for reading a blog post.
+//
+// FileEmbed — triggered by a code fence with a src= meta attribute in markdown:
+//   ```python src=/files/lakectf-2025/chall.py
+//   ```
+//   The component fetches the file from the public/files/ URL, renders it with
+//   syntax highlighting, and shows a download link. The embed starts collapsed.
+//
+// CodeBlock — custom ReactMarkdown code renderer. Detects src= in the fence
+//   meta string; if present delegates to FileEmbed, otherwise renders a normal
+//   syntax-highlighted block.
 import { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import ReactMarkdown from "react-markdown";

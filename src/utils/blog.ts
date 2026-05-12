@@ -1,10 +1,30 @@
+// Blog posts are loaded automatically from src/blog/*.md at build time via
+// Vite's import.meta.glob. To add a post, create a new .md file there with
+// the frontmatter below — no other code changes are required.
+//
+// Required frontmatter:
+//   ---
+//   title: "Post title"
+//   date: "YYYY-MM-DD"
+//   description: "One-line summary shown in the blog listing"
+//   tags: "comma, separated, tags"
+//   ---
+//
+// To embed a hosted source file inside a post, use a code fence with a src= meta:
+//   ```python src=/files/lakectf-2025/chall.py
+//   ```
+// The FileEmbed component in BlogPost.tsx will fetch and render it with a download link.
+
 export type BlogPost = {
   id: number;
+  /** Filename without extension, used as the URL/filesystem slug. */
   slug: string;
   title: string;
+  /** ISO date string "YYYY-MM-DD", used for sorting (newest first). */
   date: string;
   description: string;
   tags: string[];
+  /** Raw markdown body (everything after the closing ---). */
   body: string;
 };
 

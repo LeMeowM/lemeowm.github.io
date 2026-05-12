@@ -1,3 +1,11 @@
+// Cat routes a file's content key to the appropriate React component.
+//
+// Content key dispatch (FSFile.content):
+//   "blog-post:<slug>"      → BlogPost full-screen reader
+//   "source-file:/files/…"  → SourceViewer full-screen reader (fetches file)
+//   "<bare string>"         → contentMap lookup (About, Blog, Education, …)
+//
+// Path resolution supports arbitrary depth (/a/b/c) and absolute paths (/blog/…).
 import { useContext } from "react";
 import styled from "styled-components";
 import { termContext } from "../Terminal";

@@ -1,15 +1,13 @@
 import styled from "styled-components";
+import { sidebarLangs } from "../utils/content";
 import ProfileArt from "./commands/ProfileArt";
 
-const langs = [
-  { name: "Python", level: 9 },
-  { name: "Rust", level: 8 },
-  { name: "C", level: 7 },
-  { name: "TypeScript", level: 7 },
-  { name: "Scala", level: 6 },
-];
+// Skill data lives in src/utils/content.ts (sidebarLangs).
+// Edit it there — do not add a separate array here.
 
-const BLOCKS = 40; // overflows into flex-1 span, clipped naturally
+// BLOCKS intentionally overflows the SkillBar span; the span clips it naturally
+// via overflow:hidden + flex:1, filling the full available width.
+const BLOCKS = 40;
 
 const Wrapper = styled.div`
   display: flex;
@@ -52,7 +50,7 @@ const SkillRow = styled.div`
 
 const SkillName = styled.span`
   color: ${({ theme }) => theme.colors?.text[200]};
-  width: 6.5ch;
+  min-width: 10ch;
   flex-shrink: 0;
   white-space: nowrap;
 `;
@@ -79,7 +77,7 @@ const Sidebar: React.FC = () => (
 
     <Panel>
       <PanelLabel>─ skills ─</PanelLabel>
-      {langs.map(({ name, level }) => {
+      {sidebarLangs.map(({ name, level }) => {
         const filled = Math.round((level / 10) * BLOCKS);
         const bar = "█".repeat(filled) + "░".repeat(BLOCKS - filled);
         return (

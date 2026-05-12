@@ -3,6 +3,7 @@ import { filesystem, getDirChildren } from "./filesystem";
 import { openTargets } from "./content";
 import { commandNames } from "../commands/meta";
 
+/** Returns a string of non-breaking spaces for aligning `help` output columns. */
 export const generateTabs = (num = 0): string => {
   let tabs = "\xA0\xA0";
   for (let i = 0; i < num; i++) {
@@ -32,6 +33,18 @@ export const checkThemeSwitch = (
   currentCommand.length < 4 &&
   themes.includes(currentCommand[2]);
 
+/**
+ * Split a partial path argument into the directory to search and the filename
+ * prefix to match against.
+ *
+ * Examples:
+ *   "/blog/20"   → dirPath=["~","blog"], filePart="20",   prefix="/blog/"
+ *   "blog/20"    → dirPath=[...cwd,"blog"], filePart="20", prefix="blog/"
+ *   "20"         → dirPath=cwd,            filePart="20",  prefix=""
+ *
+ * `prefix` is prepended back onto each match so the completed value retains
+ * the user's original path style (absolute vs relative).
+ */
 const resolvePartialDir = (
   cwd: string[],
   partial: string
@@ -55,6 +68,17 @@ const resolvePartialDir = (
   return { dirPath, filePart, prefix };
 };
 
+/**
+ * Tab-completion engine called on every Tab keypress.
+ *
+ * Handles argument completion for: themes, cd, cat, ls, man, open.
+ * Falls through (returns undefined) for unknown commands so the caller can
+ * apply its own command-name completion.
+ *
+ * Side effects: calls setInputVal / setHints to update the input field.
+ * Returns the matched hint strings (may be empty) so the caller can merge
+ * them with command-name matches.
+ */
 export const argTab = (
   inputVal: string,
   setInputVal: (value: string) => void,
@@ -87,7 +111,7 @@ export const argTab = (
     return hintsCmds;
   }
 
-  // cd <dir> — tab complete directories
+  // cd <dir> — tab complete directories (supports path prefixes)
   const cdParts = inputVal.split(" ");
   if (inputVal === "cd " || (cdParts[0] === "cd" && cdParts.length === 2)) {
     const partial = inputVal === "cd " ? "" : cdParts[1];
@@ -105,7 +129,7 @@ export const argTab = (
     return [];
   }
 
-  // cat <file> — tab complete files (supports path prefix like /blog/foo)
+  // cat <file> — tab complete files (supports path prefixes like /blog/foo)
   const catParts = inputVal.split(" ");
   if (inputVal === "cat " || (catParts[0] === "cat" && catParts.length === 2)) {
     const partial = inputVal === "cat " ? "" : catParts[1];
@@ -123,7 +147,7 @@ export const argTab = (
     return [];
   }
 
-  // ls <dir> — tab complete all entries (supports path prefix)
+  // ls <dir> — tab complete all entries (supports path prefixes)
   const lsParts = inputVal.split(" ");
   if (inputVal === "ls " || (lsParts[0] === "ls" && lsParts.length === 2)) {
     const partial = inputVal === "ls " ? "" : lsParts[1];
@@ -159,7 +183,7 @@ export const argTab = (
     return [];
   }
 
-  // open <item> — tab complete based on current directory
+  // open <item> — tab complete based on current directory's openTargets
   const openParts = inputVal.split(" ");
   if (
     inputVal === "open " ||

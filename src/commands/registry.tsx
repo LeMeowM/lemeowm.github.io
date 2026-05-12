@@ -1,3 +1,8 @@
+// ── Command registry ────────────────────────────────────────────────────────
+// This file and meta.ts are managed by add_command.py.
+// To add a new command run:  python3 add_command.py <name> "<desc>" [--args]
+// Do not hand-edit the import list or the components object — the script keeps
+// them in sync with meta.ts automatically.
 import React from "react";
 import About from "../components/commands/About";
 import Cat from "../components/commands/Cat";

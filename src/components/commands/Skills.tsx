@@ -1,4 +1,7 @@
+// Skill data lives in src/utils/content.ts (languages, domains).
+// Edit it there — do not add separate arrays here.
 import styled from "styled-components";
+import { languages, domains } from "../../utils/content";
 import Panel from "../Panel";
 
 const Section = styled.div`
@@ -37,24 +40,6 @@ const DomainList = styled.div`
   color: ${({ theme }) => theme.colors?.text[100]};
   line-height: 1.75rem;
 `;
-
-const languages = [
-  { name: "Python", level: 9, label: "Advanced" },
-  { name: "Rust", level: 8, label: "Advanced" },
-  { name: "C", level: 7, label: "Proficient" },
-  { name: "TypeScript", level: 7, label: "Proficient" },
-  { name: "Scala", level: 6, label: "Intermediate" },
-  { name: "Java", level: 6, label: "Intermediate" },
-  { name: "Lua", level: 5, label: "Familiar" },
-  { name: "SQL", level: 4, label: "Familiar" },
-];
-
-const domains = [
-  "Reverse Engineering",
-  "Cryptography",
-  "Systems Programming",
-  "Formal Verification",
-];
 
 const makeBar = (level: number) => "█".repeat(level) + "░".repeat(10 - level);
 
