@@ -75,10 +75,19 @@ const pages: Record<string, ManPage> = {
     examples: ["history"],
   },
   ls: {
-    synopsis: "ls [directory]",
+    synopsis: "ls [-l] [-R] [--tree] [--help] [path]",
     description:
-      "List the contents of the current directory or a specified one. Directories appear in color with a trailing slash.",
-    examples: ["ls", "ls contact"],
+      "List directory contents. Directories appear in primary colour with a trailing slash. Flags: -l (long format with type indicator), -R (recursive), --tree (ASCII directory tree), --help (flag reference). Flags can be combined: -lR.",
+    examples: [
+      "ls",
+      "ls contact",
+      "ls -l",
+      "ls -l /files",
+      "ls -R",
+      "ls -lR /files",
+      "ls --tree",
+      "ls --tree /blog",
+    ],
   },
   man: {
     synopsis: "man <command>",
