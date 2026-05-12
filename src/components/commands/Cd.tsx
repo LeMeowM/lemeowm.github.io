@@ -1,7 +1,12 @@
 import { useContext } from "react";
 import styled from "styled-components";
 import { termContext } from "../Terminal";
-import { filesystem, getNodeAtPath, FSDir } from "../../utils/filesystem";
+import {
+  filesystem,
+  getNodeAtPath,
+  buildPath,
+  normalizePath,
+} from "../../utils/filesystem";
 import Projects from "./Projects";
 import Experience from "./Experience";
 import Education from "./Education";
@@ -24,31 +29,33 @@ const Cd: React.FC = () => {
   const { arg, cwd } = useContext(termContext);
   const target = arg[0];
 
-  // cd, cd ~, cd .., cd . — all silent (just change prompt)
+  // No arg, home, simple dot/dotdot — silent (just change prompt)
   if (!target || target === "~" || target === ".." || target === ".") {
     return <></>;
   }
 
-  const currentNode = getNodeAtPath(cwd, filesystem);
-  if (!currentNode || currentNode.type !== "dir") {
-    return <ErrorMsg>cd: {target}: No such file or directory</ErrorMsg>;
-  }
+  const resolvedPath = normalizePath(buildPath(cwd, target));
 
-  const child = (currentNode as FSDir).children[target];
-  if (!child) {
+  const node = getNodeAtPath(resolvedPath, filesystem);
+  if (!node) {
     return <ErrorMsg>cd: {target}: No such file or directory</ErrorMsg>;
   }
-  if (child.type === "file") {
+  if (node.type === "file") {
     return <ErrorMsg>cd: {target}: Not a directory</ErrorMsg>;
   }
 
+  const dirName = resolvedPath[resolvedPath.length - 1];
+
+  // Resolved to root — silent
+  if (dirName === "~") return <></>;
+
   // Content directories auto-show their page
-  if (dirContent[target]) {
-    return <>{dirContent[target]}</>;
+  if (dirContent[dirName]) {
+    return <>{dirContent[dirName]}</>;
   }
 
-  // Other directories (e.g. contact) show their file listing
-  return <Ls overridePath={[...cwd, target]} />;
+  // Other directories show their file listing
+  return <Ls overridePath={resolvedPath} />;
 };
 
 export default Cd;

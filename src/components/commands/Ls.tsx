@@ -5,7 +5,7 @@ import {
   filesystem,
   getNodeAtPath,
   getDirChildren,
-  FSDir,
+  buildPath,
 } from "../../utils/filesystem";
 import { Wrapper } from "../styles/Output.styled";
 
@@ -35,22 +35,22 @@ const Ls: React.FC<{ overridePath?: string[] }> = ({ overridePath }) => {
   const { cwd, arg } = useContext(termContext);
   const basePath = overridePath ?? cwd;
 
-  let targetPath = basePath;
+  let targetPath: string[] = basePath;
 
   if (!overridePath && arg[0]) {
-    const node = getNodeAtPath(basePath, filesystem);
-    if (node && node.type === "dir") {
-      const child = (node as FSDir).children[arg[0]];
-      if (child && child.type === "dir") {
-        targetPath = [...basePath, arg[0]];
-      } else if (!child) {
-        return (
-          <ErrorMsg>
-            ls: cannot access &apos;{arg[0]}&apos;: No such file or directory
-          </ErrorMsg>
-        );
-      }
+    const resolved = buildPath(basePath, arg[0]);
+    const node = getNodeAtPath(resolved, filesystem);
+    if (!node) {
+      return (
+        <ErrorMsg>
+          ls: cannot access &apos;{arg[0]}&apos;: No such file or directory
+        </ErrorMsg>
+      );
     }
+    if (node.type === "dir") {
+      targetPath = resolved;
+    }
+    // file arg: fall through with targetPath = basePath (list parent dir)
   }
 
   const entries = getDirChildren(targetPath, filesystem);

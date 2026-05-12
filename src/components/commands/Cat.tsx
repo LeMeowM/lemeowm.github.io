@@ -9,7 +9,12 @@
 import { useContext } from "react";
 import styled from "styled-components";
 import { termContext } from "../Terminal";
-import { filesystem, getNodeAtPath, FSFile } from "../../utils/filesystem";
+import {
+  filesystem,
+  getNodeAtPath,
+  buildPath,
+  FSFile,
+} from "../../utils/filesystem";
 import About from "./About";
 import Blog from "./Blog";
 import BlogPost from "./BlogPost";
@@ -51,9 +56,7 @@ const Cat: React.FC = () => {
 
   const filepath = arg[0];
 
-  const segments = filepath.startsWith("/")
-    ? ["~", ...filepath.slice(1).split("/").filter(Boolean)]
-    : [...cwd, ...filepath.split("/").filter(Boolean)];
+  const segments = buildPath(cwd, filepath);
 
   const node = getNodeAtPath(segments, filesystem);
   const filename = segments[segments.length - 1];

@@ -1,5 +1,5 @@
 import theme from "../components/styles/themes";
-import { filesystem, getDirChildren } from "./filesystem";
+import { filesystem, getDirChildren, buildPath } from "./filesystem";
 import { openTargets } from "./content";
 import { commandNames } from "../commands/meta";
 
@@ -52,18 +52,12 @@ const resolvePartialDir = (
   const lastSlash = partial.lastIndexOf("/");
   if (lastSlash === -1) return { dirPath: cwd, filePart: partial, prefix: "" };
 
-  const dirPart = partial.slice(0, lastSlash);
   const filePart = partial.slice(lastSlash + 1);
   const prefix = partial.slice(0, lastSlash + 1);
 
-  let dirPath: string[];
-  if (dirPart === "" || dirPart === "/") {
-    dirPath = ["~"];
-  } else if (dirPart.startsWith("/")) {
-    dirPath = ["~", ...dirPart.slice(1).split("/").filter(Boolean)];
-  } else {
-    dirPath = [...cwd, ...dirPart.split("/").filter(Boolean)];
-  }
+  // prefix includes the trailing slash, so buildPath on it yields the dir path.
+  // getNodeAtPath (called via getDirChildren) normalizes ".." internally.
+  const dirPath = buildPath(cwd, prefix);
 
   return { dirPath, filePart, prefix };
 };
