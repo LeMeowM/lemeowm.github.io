@@ -1,21 +1,40 @@
-import { EduIntro, EduList } from "../styles/Education.styled";
+import styled from "styled-components";
 import Panel from "../Panel";
+import {
+  ItemList,
+  ItemRow,
+  ItemBody,
+  ItemTitle,
+  ItemDesc,
+  ItemThumb,
+} from "../styles/ItemCard.styled";
+
+type Job = { title: string; desc: string; thumbnail?: string };
+
+const Intro = styled.div`
+  margin-bottom: 0.75rem;
+`;
 
 const Experience: React.FC = () => {
   return (
     <Panel title="experience" data-testid="experience">
-      <EduIntro>Work experience</EduIntro>
-      {jobs.map(({ title, desc }) => (
-        <EduList key={title}>
-          <div className="title">{title}</div>
-          <div className="desc">{desc}</div>
-        </EduList>
+      <Intro>Work experience</Intro>
+      {jobs.map(({ title, desc, thumbnail }) => (
+        <ItemList key={title}>
+          <ItemRow>
+            <ItemBody>
+              <ItemTitle>{title}</ItemTitle>
+              <ItemDesc>{desc}</ItemDesc>
+            </ItemBody>
+            {thumbnail && <ItemThumb src={thumbnail} alt={title} />}
+          </ItemRow>
+        </ItemList>
       ))}
     </Panel>
   );
 };
 
-const jobs = [
+const jobs: Job[] = [
   {
     title: "Flight Software Testing Engineer — EPFL Spacecraft Team",
     desc: "Lausanne, VD | 2024–2025 · Designed a Rust-based topology parser for the nest testing framework; built automated testing harnesses for UHF and X-Band comms modules; Lead UX Design Engineer for developer tooling. Supported CHESS-Pathfinder 1 & 2 missions (launch late 2026).",

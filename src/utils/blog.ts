@@ -26,6 +26,8 @@ export type BlogPost = {
   tags: string[];
   /** Raw markdown body (everything after the closing ---). */
   body: string;
+  /** Optional path to a thumbnail image, e.g. "/thumbnails/post-slug.png". */
+  thumbnail?: string;
 };
 
 const modules = import.meta.glob("../blog/*.md", {
@@ -65,6 +67,7 @@ export const blogPosts: BlogPost[] = Object.entries(modules)
       description: meta.description ?? "",
       tags: meta.tags ? meta.tags.split(",").map(t => t.trim()) : [],
       body,
+      thumbnail: meta.thumbnail,
     };
   })
   .sort((a, b) => b.date.localeCompare(a.date))

@@ -1,29 +1,50 @@
-import {
-  ProjectContainer,
-  ProjectDesc,
-  ProjectsIntro,
-  ProjectTitle,
-} from "../styles/Projects.styled";
-import { Link } from "../styles/Welcome.styled";
+import styled from "styled-components";
 import { projects } from "../../utils/content";
 import Panel from "../Panel";
+import {
+  ItemList,
+  ItemRow,
+  ItemBody,
+  ItemNum,
+  ItemTitleLink,
+  ItemDesc,
+  ItemHint,
+  ItemThumb,
+} from "../styles/ItemCard.styled";
+
+const Intro = styled.div`
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.5rem;
+`;
 
 const Projects: React.FC = () => {
   return (
     <Panel title="projects" data-testid="projects">
-      <ProjectsIntro>
+      <Intro>
         Here are some of my projects — use &apos;open &lt;n&gt;&apos; to visit
         one.
-      </ProjectsIntro>
-      {projects.map(({ id, title, desc, url }) => (
-        <ProjectContainer key={id}>
-          <ProjectTitle>
-            <Link href={url} target="_blank" rel="noopener noreferrer">
-              {id}. {title}
-            </Link>
-          </ProjectTitle>
-          <ProjectDesc>{desc}</ProjectDesc>
-        </ProjectContainer>
+      </Intro>
+      {projects.map(({ id, title, desc, url, thumbnail }) => (
+        <ItemList key={id}>
+          <ItemRow>
+            <ItemBody>
+              <div>
+                <ItemNum>{id}.</ItemNum>{" "}
+                <ItemTitleLink
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {title}
+                </ItemTitleLink>
+              </div>
+              <ItemDesc>{desc}</ItemDesc>
+              <ItemHint>open {id}</ItemHint>
+            </ItemBody>
+            {thumbnail && <ItemThumb src={thumbnail} alt={title} />}
+          </ItemRow>
+        </ItemList>
       ))}
     </Panel>
   );

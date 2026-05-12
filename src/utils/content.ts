@@ -7,6 +7,8 @@ export type Project = {
   title: string;
   desc: string;
   url: string;
+  /** Optional path to a thumbnail image, e.g. "/thumbnails/project-name.png". */
+  thumbnail?: string;
 };
 
 export const projects: Project[] = [

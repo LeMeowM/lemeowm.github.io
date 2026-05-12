@@ -10,11 +10,12 @@ Quick reference for updating each type of content on the portfolio. Where a chan
 |---------|---------|-----|
 | Blog post | `src/blog/*.md` | Create file (auto-detected) |
 | CTF source files | `public/files/…` | Drop files, run `python3 sync_files.py` |
-| Projects | `src/utils/content.ts` | Edit `projects` array |
+| Projects | `src/utils/content.ts` | Edit `projects` array (add `thumbnail?` for image) |
 | Socials | `src/utils/content.ts` | Edit `socials` array |
+| Thumbnails | `public/thumbnails/` | Drop image, add path to data entry |
 | Skills / Languages | `src/utils/content.ts` | Edit `languages`, `domains`, `sidebarLangs` |
 | Education | `src/components/commands/Education.tsx` | Edit `eduBg` array |
-| Work experience | `src/components/commands/Experience.tsx` | Edit `jobs` array |
+| Work experience | `src/components/commands/Experience.tsx` | Edit `jobs` array (add `thumbnail?` for image) |
 | About / Bio | `src/components/commands/About.tsx` | Edit JSX |
 | MOTD tips | `src/components/commands/Motd.tsx` | Edit `tips` array |
 | Nav bar buttons | `src/components/Banner.tsx` | Edit `navItems` array |
@@ -93,6 +94,7 @@ export const projects: Project[] = [
     title: "Name — Team",
     desc: "One-paragraph description.",
     url: "https://github.com/…",
+    thumbnail: "/thumbnails/project-name.png",  // optional
   },
   // …
 ];
@@ -160,8 +162,9 @@ const eduBg = [
 Edit the `jobs` array in `src/components/commands/Experience.tsx`:
 
 ```typescript
-const jobs = [
+const jobs: Job[] = [
   { title: "Role — Company", desc: "Date range. One-line summary." },
+  { title: "Role — Company", desc: "…", thumbnail: "/thumbnails/company-logo.png" },
   // …
 ];
 ```
@@ -251,6 +254,38 @@ python3 add_command.py ctf "list CTF challenges" --args
 ```
 
 This creates `src/components/commands/Ctf.tsx` (scaffold) and patches `meta.ts` and `registry.tsx`. Open the scaffold and implement the component body — everything else is wired up.
+
+---
+
+## Thumbnails
+
+Blog, projects, and experience panels all support optional thumbnail images.
+
+1. Drop the image in `public/thumbnails/` (png, jpg, or webp)
+2. Reference it by path string in the data:
+
+   **Blog** — add `thumbnail:` to the post's frontmatter in `src/blog/<slug>.md`:
+   ```
+   ---
+   title: "Post title"
+   date: "YYYY-MM-DD"
+   description: "…"
+   tags: "…"
+   thumbnail: "/thumbnails/post-slug.png"
+   ---
+   ```
+
+   **Projects** — add `thumbnail` field to the entry in `src/utils/content.ts`:
+   ```typescript
+   { id: 1, title: "…", desc: "…", url: "…", thumbnail: "/thumbnails/project-name.png" },
+   ```
+
+   **Experience** — add `thumbnail` field to the entry in `src/components/commands/Experience.tsx`:
+   ```typescript
+   { title: "Role — Company", desc: "…", thumbnail: "/thumbnails/company-logo.png" },
+   ```
+
+Omitting the field entirely hides the thumbnail slot with no layout shift.
 
 ---
 
