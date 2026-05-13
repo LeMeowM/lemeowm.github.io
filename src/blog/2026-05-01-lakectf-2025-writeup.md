@@ -1,8 +1,9 @@
 ---
-title: LakeCTF 2025 — Crypto Writeup
+title: LakeCTF 2025 - Crypto Writeup
 date: 2026-05-01
 description: Writeup for the cryptography challenges I authored for LakeCTF 2025 Qualifications.
 tags: ctf, crypto, writeup
+thumbnail: "/thumbnails/lakectf.png"
 ---
 
 # LakeCTF 2025 — Crypto Challenges
@@ -17,21 +18,28 @@ The qualifier challenges were a set of 3 challenges meant to be simple, as a bas
 
 I actually wrote three crypto challs for finals, but I was only happy with one of them. The rest will probably be released for LakeCTF 2026 finals, though they are still rather simple.
 
+Although the solve count may be low, this CTF was short (8 hours) and was one of the first ones with AI entirely banned throughout the entire competition! This means implementation challs were a lot more difficult and we should have been throwing together more comprehension challs.
+
 ### Conversation
 
-**Category:** Cryptography  
-**Points:** 500
-**Solves:** 1 (thank you manf!)
+```ctf
+{
+  "name": "Conversation",
+  "points": 500,
+  "tags": ["crypto"],
+  "solves": 1,
+  "author": "meow",
+  "description": "im lonely, come talk to me!",
+  "files": ["/files/lakectf-2025/crypto-Conversation/chall.py", "/files/lakectf-2025/crypto-Conversation/fancy.py"],
+  "flag": "EPFL{i7_will_b3_0ur_0wn_li77l3_s3cr37_f66908d81da2cfe3f4da9e61cd66d124}"
+}
+```
 
 I wrote this challenge after finding a Pell Curves discussion at [AfricaCrypt 2025](https://eprint.iacr.org/2025/875.pdf), in which Nitaj takes a look over his _own_ publication in the [Morocan Journal of Sciences](https://ced.fst-usmba.ac.ma/p/mjaga/wp-content/uploads/2026/01/vol4_V2.pdf), which is followed by him repeatedly farming this for content, which is lowkey a goated strategy.
 
 Anyways after a while, Seck, the _coauthor of the original paper_, seems to have enough of his coauthor farming content on their work??? and [publishes his own attacks on it](https://eprint.iacr.org/2026/519.pdf), which is where this challenge came to be.
 
 Then afterwards, I realised just leaking the top bits of a prime is cringe, so what way to leak the top bits? Implicitly leaking the bottom bits of course! im so smart please praise me.
-
-#### Description
-
-im lonely, come talk to me!
 
 #### Overview
 
@@ -114,10 +122,6 @@ To use this, build the challenge with Docker, and then run it with
 ```
 
 ---
-
-#### Flag:
-
-`EPFL{i7_will_b3_0ur_0wn_li77l3_s3cr37_f66908d81da2cfe3f4da9e61cd66d124}`
 
 hope you enjoyed
 

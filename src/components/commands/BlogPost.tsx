@@ -6,9 +6,14 @@
 //   The component fetches the file from the public/files/ URL, renders it with
 //   syntax highlighting, and shows a download link. The embed starts collapsed.
 //
-// CodeBlock — custom ReactMarkdown code renderer. Detects src= in the fence
-//   meta string; if present delegates to FileEmbed, otherwise renders a normal
-//   syntax-highlighted block.
+// ChallengePanel — triggered by a `ctf` language fence whose body is JSON:
+//   ```ctf
+//   { "name": "...", "points": 422, "tags": ["crypto"], ... }
+//   ```
+//   Renders a read-only CTFd-style challenge panel inline in the post.
+//
+// CodeBlock — custom ReactMarkdown code renderer. Dispatches to FileEmbed,
+//   ChallengePanel, or the default SyntaxHighlighter depending on fence attrs.
 import { useEffect, useRef, useState } from "react";
 import { useReaderKeyboard } from "../../hooks/useReaderKeyboard";
 import ReactDOM from "react-dom";
@@ -19,8 +24,6 @@ import styled from "styled-components";
 import { blogPosts } from "../../utils/blog";
 import {
   Content,
-  FileEmbedHeader,
-  FileEmbedWrapper,
   Overlay,
   ReaderStatusBar,
   Tag,
@@ -28,6 +31,9 @@ import {
   TitleBar,
   TitleDate,
 } from "../styles/BlogReader.styled";
+import ChallengePanel, { type ChallengeData } from "./ChallengePanel";
+import { ChalBody, ChalPanel } from "../styles/ChallengePanel.styled";
+import FileEmbed from "./FileEmbed";
 
 const Breadcrumb = styled.div`
   color: ${({ theme }) => theme.colors?.text[300]};
@@ -40,51 +46,6 @@ const ErrorMsg = styled.div`
   margin-bottom: 0.75rem;
   color: ${({ theme }) => theme.colors?.secondary};
 `;
-
-const FileEmbed: React.FC<{ src: string; lang: string }> = ({ src, lang }) => {
-  const [code, setCode] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    fetch(src)
-      .then(r => r.text())
-      .then(setCode)
-      .catch(() => setCode("(failed to load)"));
-  }, [src]);
-
-  const filename = src.split("/").pop() ?? src;
-  return (
-    <FileEmbedWrapper>
-      <FileEmbedHeader onClick={() => setOpen(o => !o)}>
-        <span>
-          {open ? "▾" : "▸"} {filename}
-        </span>
-        <a href={src} download={filename} onClick={e => e.stopPropagation()}>
-          ↓ download
-        </a>
-      </FileEmbedHeader>
-      {open &&
-        (code === null ? (
-          <span style={{ padding: "0.5rem 0.75rem", display: "block" }}>
-            loading…
-          </span>
-        ) : (
-          <SyntaxHighlighter
-            language={lang}
-            style={vscDarkPlus}
-            customStyle={{
-              background: "transparent",
-              padding: "0.5rem 0.75rem",
-              margin: 0,
-              fontSize: "0.875rem",
-            }}
-            wrapLongLines
-          >
-            {code}
-          </SyntaxHighlighter>
-        ))}
-    </FileEmbedWrapper>
-  );
-};
 
 const CodeBlock = ({
   className,
@@ -100,6 +61,21 @@ const CodeBlock = ({
   const srcMatch = /src=(\S+)/.exec(meta);
 
   if (srcMatch) return <FileEmbed src={srcMatch[1]} lang={lang} />;
+
+  if (lang === "ctf") {
+    try {
+      const data = JSON.parse(
+        String(children).replace(/\n$/, "")
+      ) as ChallengeData;
+      return <ChallengePanel data={data} />;
+    } catch {
+      return (
+        <ChalPanel>
+          <ChalBody>Invalid challenge JSON</ChalBody>
+        </ChalPanel>
+      );
+    }
+  }
 
   return (
     <SyntaxHighlighter

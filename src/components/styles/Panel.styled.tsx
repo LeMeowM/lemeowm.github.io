@@ -6,6 +6,8 @@ export const PanelWrapper = styled.div`
   padding: 0.75rem 1rem;
   margin-top: 0.75rem;
   margin-bottom: 0.5rem;
+  width: fit-content;
+  max-width: 100%;
 `;
 
 export const PanelTitle = styled.span`

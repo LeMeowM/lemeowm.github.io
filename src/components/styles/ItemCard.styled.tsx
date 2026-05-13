@@ -13,6 +13,7 @@ export const ItemRow = styled.div`
 export const ItemBody = styled.div`
   flex: 1;
   min-width: 0;
+  max-width: 60ch;
 `;
 
 export const ItemNum = styled.span`
