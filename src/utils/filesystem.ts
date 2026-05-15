@@ -39,6 +39,24 @@ const blogChildren: Record<string, FSFile> = {
 // Managed by sync_files.py. Run `python3 sync_files.py` after adding or
 // removing files from public/files/. Do not edit this block by hand.
 const filesChildren: Record<string, FSDir | FSFile> = {
+  "kalmarctf-2026": {
+    type: "dir",
+    children: {
+      "crypto-RBG+": {
+        type: "dir",
+        children: {
+          "chall.py": {
+            type: "file",
+            content: "source-file:/files/kalmarctf-2026/crypto-RBG+/chall.py",
+          },
+          "output.txt": {
+            type: "file",
+            content: "source-file:/files/kalmarctf-2026/crypto-RBG+/output.txt",
+          },
+        },
+      },
+    },
+  },
   "lakectf-2025": {
     type: "dir",
     children: {

@@ -64,6 +64,128 @@ const resolvePartialDir = (
 };
 
 /**
+ * Pure version of arg hint computation — returns the top match string
+ * (the full argument value, not yet sliced) without any side effects.
+ */
+const getTopArgHint = (inputVal: string, cwd: string[]): string | null => {
+  // themes set <theme>
+  if (inputVal.startsWith("themes set ")) {
+    const partial = inputVal.split(" ")[2] ?? "";
+    const match = Object.keys(theme).find(
+      t => t.startsWith(partial) && t !== partial
+    );
+    return match ?? null;
+  }
+  if (
+    "themes".startsWith(inputVal.split(" ")[0]) &&
+    inputVal.split(" ")[1] !== "set" &&
+    "set".startsWith(inputVal.split(" ")[1] ?? "")
+  ) {
+    return null;
+  }
+
+  // cd <dir>
+  const cdParts = inputVal.split(" ");
+  if (cdParts[0] === "cd" && cdParts.length === 2) {
+    const partial = cdParts[1] ?? "";
+    const { dirPath, filePart, prefix } = resolvePartialDir(cwd, partial);
+    const dirs = getDirChildren(dirPath, filesystem, "dir").map(e => e.name);
+    const match = dirs.find(
+      d => d.startsWith(filePart) && prefix + d !== partial
+    );
+    return match != null ? prefix + match : null;
+  }
+
+  // cat <file|dir/> — directories surfaced as intermediate path completions
+  const catParts = inputVal.split(" ");
+  if (catParts[0] === "cat" && catParts.length === 2) {
+    const partial = catParts[1] ?? "";
+    const { dirPath, filePart, prefix } = resolvePartialDir(cwd, partial);
+    const entries = getDirChildren(dirPath, filesystem).map(e =>
+      e.type === "dir" ? e.name + "/" : e.name
+    );
+    const match = entries.find(
+      n => n.startsWith(filePart) && prefix + n !== partial
+    );
+    return match != null ? prefix + match : null;
+  }
+
+  // ls <dir>
+  const lsParts = inputVal.split(" ");
+  if (lsParts[0] === "ls" && lsParts.length === 2) {
+    const partial = lsParts[1] ?? "";
+    const { dirPath, filePart, prefix } = resolvePartialDir(cwd, partial);
+    const entries = getDirChildren(dirPath, filesystem).map(e =>
+      e.type === "dir" ? e.name + "/" : e.name
+    );
+    const match = entries.find(
+      n => n.startsWith(filePart) && prefix + n !== partial
+    );
+    return match != null ? prefix + match : null;
+  }
+
+  // man <command>
+  const manParts = inputVal.split(" ");
+  if (manParts[0] === "man" && manParts.length === 2) {
+    const partial = manParts[1] ?? "";
+    const match = commandNames.find(
+      c => c.startsWith(partial) && c !== partial
+    );
+    return match ?? null;
+  }
+
+  // grep <pattern> <slug.md>
+  const grepParts = inputVal.split(" ");
+  if (grepParts[0] === "grep" && grepParts.length === 3) {
+    const partial = grepParts[2] ?? "";
+    const slugs = blogPosts.map(p => `${p.slug}.md`);
+    const match = slugs.find(s => s.startsWith(partial) && s !== partial);
+    return match ?? null;
+  }
+
+  // open <item>
+  const openParts = inputVal.split(" ");
+  if (openParts[0] === "open" && openParts.length === 2) {
+    const partial = openParts[1] ?? "";
+    const dirName = cwd[cwd.length - 1];
+    const targets = openTargets[dirName];
+    if (targets) {
+      const match = Object.keys(targets).find(
+        k => k.startsWith(partial) && k !== partial
+      );
+      return match ?? null;
+    }
+  }
+
+  return null;
+};
+
+/**
+ * Returns the ghost-text suffix to display after the current input value,
+ * or an empty string if there is no predictive completion.
+ * Pure — no side effects.
+ */
+export const getPredictiveHint = (inputVal: string, cwd: string[]): string => {
+  if (!inputVal.trim()) return "";
+
+  const parts = inputVal.split(" ");
+
+  // Command-name completion (no space yet)
+  if (parts.length === 1) {
+    const match = commandNames.find(
+      n => n.startsWith(inputVal) && n !== inputVal
+    );
+    return match ? match.slice(inputVal.length) : "";
+  }
+
+  // Argument completion
+  const topHint = getTopArgHint(inputVal, cwd);
+  if (!topHint) return "";
+  const lastPart = parts[parts.length - 1] ?? "";
+  return topHint.startsWith(lastPart) ? topHint.slice(lastPart.length) : "";
+};
+
+/**
  * Tab-completion engine called on every Tab keypress.
  *
  * Handles argument completion for: themes, cd, cat, ls, man, open.
@@ -124,13 +246,15 @@ export const argTab = (
     return [];
   }
 
-  // cat <file> — tab complete files (supports path prefixes like /blog/foo)
+  // cat <file|dir/> — directories surfaced as intermediate path completions
   const catParts = inputVal.split(" ");
   if (inputVal === "cat " || (catParts[0] === "cat" && catParts.length === 2)) {
     const partial = inputVal === "cat " ? "" : catParts[1];
     const { dirPath, filePart, prefix } = resolvePartialDir(cwd, partial);
-    const files = getDirChildren(dirPath, filesystem, "file").map(e => e.name);
-    const matches = files.filter(f => f.startsWith(filePart));
+    const entries = getDirChildren(dirPath, filesystem).map(e =>
+      e.type === "dir" ? e.name + "/" : e.name
+    );
+    const matches = entries.filter(n => n.startsWith(filePart));
     if (matches.length === 1) {
       setInputVal(`cat ${prefix}${matches[0]}`);
       return [];

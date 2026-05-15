@@ -52,6 +52,42 @@ The challenge generates two 256-bit primes $p$ and $q$ and constructs a 512-bit 
 
 To recover the flag, we need to first factorise $\hat{N}$.Then using information from that, we can factorise $N$, and from that we decrypt both layers.
 
+##### Notes
+
+During the generation of the primes, we check that $p, q \pmod{9} \equiv 4, 7$:
+
+```python
+while True:
+    p, q = getPrime(256), getPrime(256)
+    if p % 3 == 1 and p % 9 != 1 and q % 3 == 1 and q % 9 != 1:
+        break
+```
+
+This might look suspicious (which it is), but its actually because I was lazy for the future encryption algorithm.
+
+Taking a look at the encryption:
+
+```python
+while True:
+    secret = "".join(choices(list("abcdefghijklmnopqrstuvwxyz"), k=32)).encode()
+    m = int.from_bytes(secret, "big")
+    m = pow(m, e_hat, N_hat)
+    val = ((1 - pow(m, 3, N)) * pow(a, -1, N)) % N
+
+    if pow(val, (p - 1) // 3, p) == 1 and pow(val, (q - 1) // 3, q) == 1:
+        v_p = pow(val, pow(3, -1, (p - 1) // 3), p)
+        v_q = pow(val, pow(3, -1, (q - 1) // 3), q)
+        crt_sol = crt([v_p, v_q], [p, q])
+        if crt_sol is None:
+            continue
+        v, _ = crt_sol
+        break
+```
+
+We can see that (WLoS), that $v_p$ is supposed to be ${}^3\sqrt{val}\pmod{p}$ and if $(p-1) | 9$, we get that $v_p$ does not exist within this construction as $(p-1)/3 | 3$ and hence does not have an inverse.
+
+Instead, we have to find the cube root through the sympy `nthroot_mod`, which sometimes took over 5 minutes to compute it, which is completely unacceptable for a live challenge.
+
 #### Part 1
 
 We can quickly see that, although $\hat{N}$ may look like a 512-bit modulus, it is actually lying about its size.

@@ -5,8 +5,10 @@ import {
   CmdNotFound,
   Empty,
   Form,
+  GhostSuffix,
   Hints,
   Input,
+  InputWrapper,
   MobileBr,
   MobileSpan,
   Wrapper,
@@ -56,8 +58,16 @@ const Terminal: React.FC<TerminalProps> = ({
 
   const clearHistory = () => setCmdHistory([]);
 
-  const { inputRef, inputVal, hints, handleChange, handleKeyDown, resetInput } =
-    useTerminalInput({ cmdHistory, cwd, clearHistory, setRerender });
+  const {
+    inputRef,
+    inputVal,
+    hints,
+    ghostSuffix,
+    acceptGhost,
+    handleChange,
+    handleKeyDown,
+    resetInput,
+  } = useTerminalInput({ cmdHistory, cwd, clearHistory, setRerender });
 
   const updateCwd = (newCwd: string[]) => {
     setCwd(newCwd);
@@ -110,20 +120,29 @@ const Terminal: React.FC<TerminalProps> = ({
           <TermInfo cwd={cwd} /> <MobileBr />
           <MobileSpan>&#62;</MobileSpan>
         </label>
-        <Input
-          title="terminal-input"
-          type="text"
-          id="terminal-input"
-          autoComplete="off"
-          spellCheck="false"
-          autoFocus
-          autoCapitalize="off"
-          ref={inputRef}
-          value={inputVal}
-          placeholder={inputVal ? "" : "try: ls"}
-          onKeyDown={handleKeyDown}
-          onChange={handleChange}
-        />
+        <InputWrapper>
+          <Input
+            title="terminal-input"
+            type="text"
+            id="terminal-input"
+            autoComplete="off"
+            spellCheck="false"
+            autoFocus
+            autoCapitalize="off"
+            ref={inputRef}
+            value={inputVal}
+            $shrink={!!ghostSuffix}
+            size={ghostSuffix ? Math.max(inputVal.length, 1) : undefined}
+            placeholder={inputVal ? "" : "try: ls"}
+            onKeyDown={handleKeyDown}
+            onChange={handleChange}
+          />
+          {ghostSuffix && (
+            <GhostSuffix aria-hidden="true" onClick={acceptGhost}>
+              {ghostSuffix}
+            </GhostSuffix>
+          )}
+        </InputWrapper>
       </Form>
 
       {cmdHistory.map(({ cmd: cmdH, cwd: entryCwd }, index) => {

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { argTab } from "../utils/funcs";
+import { argTab, getPredictiveHint } from "../utils/funcs";
 import { commandNames, type CmdEntry } from "../commands/meta";
 
 type Options = {
@@ -20,6 +20,7 @@ export const useTerminalInput = ({
   const [hints, setHints] = useState<string[]>([]);
   const [hintCursor, setHintCursor] = useState(-1);
   const [pointer, setPointer] = useState(-1);
+  const [ghostSuffix, setGhostSuffix] = useState("");
 
   // Focus input whenever anything on the page is clicked
   useEffect(() => {
@@ -33,6 +34,11 @@ export const useTerminalInput = ({
     const timer = setTimeout(() => inputRef.current?.focus(), 1);
     return () => clearTimeout(timer);
   }, [inputVal, pointer]);
+
+  // Compute ghost text on every keystroke
+  useEffect(() => {
+    setGhostSuffix(inputVal.trim() ? getPredictiveHint(inputVal, cwd) : "");
+  }, [inputVal, cwd]);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,12 +127,28 @@ export const useTerminalInput = ({
     }
   };
 
+  const acceptGhost = useCallback(() => {
+    if (!ghostSuffix) return;
+    setInputVal(prev => prev + ghostSuffix);
+    setGhostSuffix("");
+  }, [ghostSuffix]);
+
   const resetInput = () => {
     setInputVal("");
     setHints([]);
     setHintCursor(-1);
     setPointer(-1);
+    setGhostSuffix("");
   };
 
-  return { inputRef, inputVal, hints, handleChange, handleKeyDown, resetInput };
+  return {
+    inputRef,
+    inputVal,
+    hints,
+    ghostSuffix,
+    acceptGhost,
+    handleChange,
+    handleKeyDown,
+    resetInput,
+  };
 };

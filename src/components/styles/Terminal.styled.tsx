@@ -40,16 +40,32 @@ export const Form = styled.form`
   }
 `;
 
-export const Input = styled.input`
+export const InputWrapper = styled.div`
   flex-grow: 1;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+`;
+
+export const Input = styled.input<{ $shrink: boolean }>`
+  padding: 0;
+  ${({ $shrink }) => ($shrink ? "min-width: 1ch;" : "flex-grow: 1;")}
 
   &::placeholder {
     color: ${({ theme }) => theme.colors?.text[300]};
     opacity: 0.6;
   }
+`;
+
+export const GhostSuffix = styled.span`
+  color: ${({ theme }) => theme.colors?.text[300] ?? "#888"};
+  opacity: 0.45;
+  white-space: pre;
+  pointer-events: none;
 
   @media (max-width: 550px) {
-    min-width: 85%;
+    pointer-events: auto;
+    cursor: pointer;
   }
 `;
 
