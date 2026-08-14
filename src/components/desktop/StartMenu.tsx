@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { footerLinks, navItems } from "@content/navigation";
 import { profile } from "@content/profile";
 import { bevelOut, CHROME_FONT, chrome } from "../styles/Chrome.styled";
-import { PANELS } from "./panels";
+import { PANEL_LIST } from "./panels";
 import { useWindows } from "./windowManager";
 
 const Menu = styled.div`
@@ -171,7 +171,7 @@ const StartMenu: React.FC<Props> = ({ onCommand, onClose }) => {
         ))}
         <Divider />
         <Section>Windows</Section>
-        {PANELS.map(({ id, taskLabel, icon }) => (
+        {PANEL_LIST.map(({ id, taskLabel, icon }) => (
           <Item
             key={id}
             role="menuitemcheckbox"
@@ -203,7 +203,7 @@ const StartMenu: React.FC<Props> = ({ onCommand, onClose }) => {
         <Item
           role="menuitem"
           onClick={() => {
-            PANELS.forEach(p => hide(p.id));
+            PANEL_LIST.forEach(p => hide(p.id));
             onClose();
           }}
         >

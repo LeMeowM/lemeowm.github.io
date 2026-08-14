@@ -10,9 +10,9 @@ import {
   grooveIn,
 } from "../styles/Chrome.styled";
 import { pathToString } from "../../utils/filesystem";
-import { PANELS } from "./panels";
+import { PANEL_LIST } from "./panels";
 import StartMenu from "./StartMenu";
-import { useWindows } from "./windowManager";
+import { PanelId, useWindows } from "./windowManager";
 
 const Bar = styled.footer`
   position: relative;
@@ -130,7 +130,7 @@ const Taskbar: React.FC<Props> = ({ cwd, themeName, onCommand }) => {
   const { visible, floating, show, hide, active, setActive } = useWindows();
 
   /** Win2k behaviour: raise a hidden window, minimize the focused one. */
-  const taskClick = (id: (typeof PANELS)[number]["id"]) => {
+  const taskClick = (id: PanelId) => {
     if (!visible[id]) show(id);
     else if (active === id) hide(id);
     else setActive(id);
@@ -162,7 +162,7 @@ const Taskbar: React.FC<Props> = ({ cwd, themeName, onCommand }) => {
       )}
       <Separator />
       <Tasks>
-        {PANELS.map(({ id, taskLabel, icon }) => (
+        {PANEL_LIST.map(({ id, taskLabel, icon }) => (
           <TaskButton
             key={id}
             type="button"

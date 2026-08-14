@@ -224,27 +224,43 @@ const ScrollArea: React.FC<Props> = ({
     );
   }, []);
 
+  /**
+   * measure() reads scrollHeight/clientHeight, which forces layout. The
+   * terminal re-renders on every keystroke and each of those mutates the
+   * subtree, so coalesce every trigger into one measurement per frame.
+   */
+  const frame = useRef(0);
+  const schedule = useCallback(() => {
+    if (frame.current) return;
+    frame.current = requestAnimationFrame(() => {
+      frame.current = 0;
+      measure();
+    });
+  }, [measure]);
+
   useEffect(() => {
     const el = vp.current;
     if (!el) return;
     negative.current = probeNegative(el);
-    el.addEventListener("scroll", measure, { passive: true });
-    const ro = new ResizeObserver(measure);
+    schedule();
+    el.addEventListener("scroll", schedule, { passive: true });
+    const ro = new ResizeObserver(schedule);
     ro.observe(el);
     // Terminal output and markdown images change the content, not the box.
-    const mo = new MutationObserver(measure);
+    const mo = new MutationObserver(schedule);
     mo.observe(el, { childList: true, subtree: true, characterData: true });
     return () => {
-      el.removeEventListener("scroll", measure);
+      cancelAnimationFrame(frame.current);
+      el.removeEventListener("scroll", schedule);
       ro.disconnect();
       mo.disconnect();
     };
-  }, [measure]);
+  }, [schedule]);
 
-  // The tracks only exist once a bar is shown, so their length is unknown on
-  // the first pass. Re-measuring after every render settles it (setM is a
-  // no-op once the numbers stop changing).
-  useEffect(measure);
+  // A track only exists once its bar is shown, so the first measurement of a
+  // newly appeared bar has no track length to size the thumb against. Measure
+  // once more when a bar appears or disappears to settle it.
+  useEffect(schedule, [schedule, m.vOn, m.hOn]);
 
   const hold = (step: () => void) => (e: React.PointerEvent) => {
     e.preventDefault();

@@ -30,7 +30,7 @@ import Window from "./Window";
 import { PANELS } from "./panels";
 import { useWindows } from "./windowManager";
 
-const meta = PANELS[2];
+const meta = PANELS.settings;
 const themeNames = Object.keys(themes);
 
 /** Top-N languages for the bar chart, strongest first. */
@@ -151,9 +151,9 @@ const Stats = styled.dl`
 
 type Tab = "appearance" | "system";
 
-type Props = { themeName: string; className?: string };
+type Props = { themeName: string };
 
-const SettingsWindow: React.FC<Props> = ({ themeName, className }) => {
+const SettingsWindow: React.FC<Props> = ({ themeName }) => {
   const [tab, setTab] = useState<Tab>("appearance");
   const switchTheme = useContext(themeContext);
   const { visible, hide } = useWindows();
@@ -180,7 +180,6 @@ const SettingsWindow: React.FC<Props> = ({ themeName, className }) => {
       id={meta.id}
       title={meta.title}
       icon={meta.icon}
-      className={className}
       bodyKind="dialog"
       status={
         <>

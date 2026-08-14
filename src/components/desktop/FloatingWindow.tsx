@@ -8,16 +8,8 @@
 import { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
-import {
-  StatusStrip,
-  TitleBar,
-  TitleButton,
-  TitleButtons,
-  TitleIcon,
-  TitleText,
-  WindowBody,
-  WindowFrame,
-} from "../styles/Chrome.styled";
+import { StatusStrip, WindowBody, WindowFrame } from "../styles/Chrome.styled";
+import WindowTitleBar from "./WindowTitleBar";
 import { useWindows } from "./windowManager";
 
 const CASCADE_STEP = 26;
@@ -104,19 +96,13 @@ const FloatingWindow: React.FC<Props> = ({
       aria-labelledby={`window-title-${windowKey}`}
       onMouseDown={raise}
     >
-      <TitleBar $active={active === windowKey}>
-        <TitleIcon aria-hidden="true">{icon}</TitleIcon>
-        <TitleText id={`window-title-${windowKey}`}>{title}</TitleText>
-        <TitleButtons>
-          <TitleButton
-            type="button"
-            aria-label={`Close ${title}`}
-            onClick={onClose}
-          >
-            ✕
-          </TitleButton>
-        </TitleButtons>
-      </TitleBar>
+      <WindowTitleBar
+        titleId={`window-title-${windowKey}`}
+        title={title}
+        icon={icon}
+        active={active === windowKey}
+        onClose={onClose}
+      />
       <WindowBody>{children}</WindowBody>
       {status && <StatusStrip>{status}</StatusStrip>}
     </Frame>,

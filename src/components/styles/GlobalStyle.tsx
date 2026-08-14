@@ -1,6 +1,13 @@
 import { createGlobalStyle, DefaultTheme } from "styled-components";
 import { normalize } from "styled-normalize";
-import { arrowIcon, chrome, trackColor } from "./Chrome.styled";
+import {
+  arrowIcon,
+  bevelIn,
+  bevelOut,
+  chrome,
+  ditherBg,
+  trackColor,
+} from "./Chrome.styled";
 
 const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
   ${normalize}
@@ -55,14 +62,7 @@ const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
   /* Track: the 50% dither of face and white that Win2k stipples it with */
   ::-webkit-scrollbar-track,
   ::-webkit-scrollbar-corner {
-    background-color: ${({ theme }) => chrome(theme).face};
-    background-image: ${({ theme }) => {
-      const light = chrome(theme).faceHighlight;
-      return `linear-gradient(45deg, ${light} 25%, transparent 25%, transparent 75%, ${light} 75%),
-        linear-gradient(45deg, ${light} 25%, transparent 25%, transparent 75%, ${light} 75%)`;
-    }};
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
+    ${ditherBg}
   }
   /* Handle and arrow buttons: raised chrome tiles */
   ::-webkit-scrollbar-thumb,
@@ -70,19 +70,11 @@ const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
     background-color: ${({ theme }) => chrome(theme).face};
     background-repeat: no-repeat;
     background-position: center;
-    box-shadow:
-      inset -1px -1px 0 ${({ theme }) => chrome(theme).faceText},
-      inset 1px 1px 0 ${({ theme }) => chrome(theme).faceHighlight},
-      inset -2px -2px 0 ${({ theme }) => chrome(theme).faceShadow},
-      inset 2px 2px 0 ${({ theme }) => chrome(theme).faceHighlight};
+    ${bevelOut}
   }
   ::-webkit-scrollbar-thumb:active,
   ::-webkit-scrollbar-button:active {
-    box-shadow:
-      inset -1px -1px 0 ${({ theme }) => chrome(theme).faceHighlight},
-      inset 1px 1px 0 ${({ theme }) => chrome(theme).faceText},
-      inset -2px -2px 0 ${({ theme }) => chrome(theme).faceHighlight},
-      inset 2px 2px 0 ${({ theme }) => chrome(theme).faceShadow};
+    ${bevelIn}
   }
   ::-webkit-scrollbar-button {
     width: 16px;

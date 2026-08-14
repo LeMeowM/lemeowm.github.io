@@ -84,6 +84,28 @@ export const Area = styled.main`
   }
 `;
 
+/**
+ * A cell of the canonical layout. The grid placement lives here rather than on
+ * the window itself: a maximized window positions itself absolutely against the
+ * desktop, and a grid-area on the window would confine it to its own cell.
+ */
+export const Slot = styled.div<{ $area: string; $mobileHeight: string }>`
+  display: flex;
+  min-height: 0;
+  min-width: 0;
+  grid-area: ${({ $area }) => $area};
+
+  @media (max-width: 900px) {
+    flex: 0 0 auto;
+    min-height: ${({ $mobileHeight }) => $mobileHeight};
+  }
+
+  > * {
+    flex: 1;
+    min-width: 0;
+  }
+`;
+
 /** Portal target for blog/source reader windows. */
 export const WindowLayer = styled.div`
   position: absolute;

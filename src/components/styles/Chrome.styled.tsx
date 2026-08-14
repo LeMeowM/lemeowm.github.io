@@ -78,18 +78,28 @@ const ARROWS: Record<string, [number, number, number, number][]> = {
   ],
 };
 
+// Styled-components re-runs interpolations on every render; there are only a
+// handful of (direction, colour) pairs, so build each icon once.
+const iconCache = new Map<string, string>();
+
 /** Scrollbar button glyph as an inline SVG, tinted to the chrome text colour. */
 export const arrowIcon = (color: string, dir: keyof typeof ARROWS) => {
+  const key = `${dir}:${color}`;
+  const cached = iconCache.get(key);
+  if (cached) return cached;
+
   const rects = ARROWS[dir]
     .map(
       ([x, y, w, h]) =>
         `%3Crect x='${x}' y='${y}' width='${w}' height='${h}'/%3E`
     )
     .join("");
-  return `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='${color.replace(
+  const icon = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='${color.replace(
     "#",
     "%23"
   )}'%3E${rects}%3C/svg%3E")`;
+  iconCache.set(key, icon);
+  return icon;
 };
 
 /** The 50% face/white stipple Win2k fills scrollbar troughs with. */

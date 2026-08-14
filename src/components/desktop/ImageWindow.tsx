@@ -6,7 +6,7 @@ import ProfileArt from "../commands/ProfileArt";
 import Window from "./Window";
 import { PANELS } from "./panels";
 
-const meta = PANELS[1];
+const meta = PANELS.profile;
 
 const ArtArea = styled.div`
   flex: 1;
@@ -18,12 +18,11 @@ const ArtArea = styled.div`
   padding: 0.35rem;
 `;
 
-const ImageWindow: React.FC<{ className?: string }> = ({ className }) => (
+const ImageWindow: React.FC = () => (
   <Window
     id={meta.id}
     title={meta.title}
     icon={meta.icon}
-    className={className}
     status={
       <>
         <StatusCell $grow>{profile.avatar}</StatusCell>
