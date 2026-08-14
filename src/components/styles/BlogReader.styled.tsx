@@ -14,13 +14,6 @@ export const Content = styled.div`
   width: 100%;
   line-height: 1.75rem;
 
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.colors?.scrollHandle};
-  }
-
   h1,
   h2,
   h3 {

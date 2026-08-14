@@ -28,6 +28,41 @@ export const chrome = (theme: DefaultTheme) => theme.colors?.chrome ?? FALLBACK;
 export const bodyColor = (theme: DefaultTheme) =>
   theme.colors?.body ?? "#000000";
 
+/** Blend two #rrggbb colours; `t` is how much of `b` to take. */
+const mix = (a: string, b: string, t: number) => {
+  const parse = (hex: string) =>
+    [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+  const [r1, g1, b1] = parse(a);
+  const [r2, g2, b2] = parse(b);
+  const chan = (x: number, y: number) =>
+    Math.round(x + (y - x) * t)
+      .toString(16)
+      .padStart(2, "0");
+  return `#${chan(r1, r2)}${chan(g1, g2)}${chan(b1, b2)}`;
+};
+
+/**
+ * Scrollbar trough. WebKit stipples it with a 50% dither of face and white;
+ * Firefox can only take a flat colour, so it gets the average of the two.
+ */
+export const trackColor = (theme: DefaultTheme) => {
+  const c = chrome(theme);
+  return mix(c.face, c.faceHighlight, 0.5);
+};
+
+const ARROWS: Record<string, string> = {
+  up: "1,5.5 7,5.5 4,2",
+  down: "1,2.5 7,2.5 4,6",
+  left: "5.5,1 5.5,7 2,4",
+  right: "2.5,1 2.5,7 6,4",
+};
+
+/** Scrollbar button glyph as an inline SVG, tinted to the chrome text colour. */
+export const arrowIcon = (color: string, dir: keyof typeof ARROWS) =>
+  `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpolygon points='${
+    ARROWS[dir]
+  }' fill='${color.replace("#", "%23")}'/%3E%3C/svg%3E")`;
+
 /** Raised 3D border (window frames, buttons at rest). */
 export const bevelOut = css`
   box-shadow: inset -1px -1px 0 ${({ theme }) => chrome(theme).faceText},
