@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { bevelIn } from "./Chrome.styled";
 
 export const ItemList = styled.div`
   margin-bottom: 0.25rem;
@@ -56,7 +57,9 @@ export const ItemThumb = styled.img`
   width: 64px;
   height: 64px;
   object-fit: cover;
-  opacity: 0.7;
+  opacity: 0.85;
   flex-shrink: 0;
-  border: 1px solid ${({ theme }) => theme.colors?.text[300]};
+  padding: 2px;
+  background: ${({ theme }) => theme.colors?.body};
+  ${bevelIn}
 `;

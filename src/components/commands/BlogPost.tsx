@@ -1,4 +1,5 @@
-// BlogPost renders a full-screen overlay (via React portal) for reading a blog post.
+// BlogPost opens a desktop window (via React portal into #window-layer) for
+// reading a blog post. Each post opens in front of the windows already open.
 //
 // FileEmbed — triggered by a code fence with a src= meta attribute in markdown:
 //   ```python src=/files/lakectf-2025/chall.py
@@ -14,23 +15,17 @@
 //
 // CodeBlock — custom ReactMarkdown code renderer. Dispatches to FileEmbed,
 //   ChallengePanel, or the default SyntaxHighlighter depending on fence attrs.
-import { useEffect, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { useReaderKeyboard } from "../../hooks/useReaderKeyboard";
-import ReactDOM from "react-dom";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import styled from "styled-components";
 import { blogPosts } from "../../utils/blog";
-import {
-  Content,
-  Overlay,
-  ReaderStatusBar,
-  Tag,
-  TagRow,
-  TitleBar,
-  TitleDate,
-} from "../styles/BlogReader.styled";
+import { Content, Tag, TagRow } from "../styles/BlogReader.styled";
+import { StatusCell } from "../styles/Chrome.styled";
+import FloatingWindow from "../desktop/FloatingWindow";
+import { useWindows } from "../desktop/windowManager";
 import ChallengePanel, { type ChallengeData } from "./ChallengePanel";
 import { ChalBody, ChalPanel } from "../styles/ChallengePanel.styled";
 import FileEmbed from "./FileEmbed";
@@ -98,8 +93,9 @@ type Props = { slug: string };
 
 const BlogPost: React.FC<Props> = ({ slug }) => {
   const [open, setOpen] = useState(true);
-  const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const windowKey = useId();
+  const { active } = useWindows();
   const post = blogPosts.find(p => p.slug === slug);
 
   const handleClose = () => {
@@ -107,11 +103,8 @@ const BlogPost: React.FC<Props> = ({ slug }) => {
     document.getElementById("terminal-input")?.focus();
   };
 
-  useEffect(() => {
-    if (open) overlayRef.current?.focus();
-  }, [open]);
-
-  useReaderKeyboard(contentRef, handleClose, open);
+  // Only the focused reader window reacts to q/Esc and the scroll keys.
+  useReaderKeyboard(contentRef, handleClose, open && active === windowKey);
 
   if (!post) return <ErrorMsg>{slug}: post not found</ErrorMsg>;
 
@@ -120,39 +113,36 @@ const BlogPost: React.FC<Props> = ({ slug }) => {
       <Breadcrumb>
         {open ? "→ reading:" : "read:"} {post.title}
       </Breadcrumb>
-      {open &&
-        ReactDOM.createPortal(
-          <Overlay
-            ref={overlayRef}
-            tabIndex={-1}
-            onClick={e => e.stopPropagation()}
-          >
-            <TitleBar>
-              <span>─ {post.title} ─</span>
-              <TitleDate>{post.date}</TitleDate>
-            </TitleBar>
-            <Content ref={contentRef}>
-              {post.tags.length > 0 && (
-                <TagRow>
-                  {post.tags.map(t => (
-                    <Tag key={t}>[{t}]</Tag>
-                  ))}
-                </TagRow>
-              )}
-              <ReactMarkdown components={{ code: CodeBlock as any }}>
-                {post.body}
-              </ReactMarkdown>
-            </Content>
-            <ReaderStatusBar>
-              <span>q/Esc Quit</span>
-              <span>↑↓ Scroll</span>
-              <span>Space/PgDn Page↓</span>
-              <span>PgUp Page↑</span>
-              <span>Home/End Top/Bottom</span>
-            </ReaderStatusBar>
-          </Overlay>,
-          document.body
-        )}
+      {open && (
+        <FloatingWindow
+          windowKey={windowKey}
+          title={`${post.slug}.md — ${post.title}`}
+          icon="📄"
+          onClose={handleClose}
+          status={
+            <>
+              <StatusCell>{post.date}</StatusCell>
+              <StatusCell $grow>
+                q/Esc Quit · ↑↓ Scroll · Space Page↓
+              </StatusCell>
+              <StatusCell>Home/End Top/Bottom</StatusCell>
+            </>
+          }
+        >
+          <Content ref={contentRef}>
+            {post.tags.length > 0 && (
+              <TagRow>
+                {post.tags.map(t => (
+                  <Tag key={t}>[{t}]</Tag>
+                ))}
+              </TagRow>
+            )}
+            <ReactMarkdown components={{ code: CodeBlock as any }}>
+              {post.body}
+            </ReactMarkdown>
+          </Content>
+        </FloatingWindow>
+      )}
     </>
   );
 };

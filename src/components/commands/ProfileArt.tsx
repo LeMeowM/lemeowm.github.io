@@ -77,15 +77,25 @@ const ProfileArt: React.FC = () => {
     setRuns(frameToRuns(frame));
   };
 
+  /**
+   * The frame is square in cells, but a cell is taller than it is wide, so the
+   * art ends up ~1.7x taller than it is wide. Fit it to the shorter side of the
+   * window so the portrait is never cropped.
+   */
+  const colsForWrap = (el: HTMLDivElement) =>
+    Math.floor(
+      Math.min(
+        el.clientWidth / getCharWidth(DISPLAY_FONT_SIZE),
+        el.clientHeight / DISPLAY_FONT_SIZE
+      )
+    );
+
   useEffect(() => {
     const img = new Image();
     img.onload = () => {
       imgRef.current = img;
       if (!wrapRef.current) return;
-      const cols = Math.floor(
-        wrapRef.current.clientWidth / getCharWidth(DISPLAY_FONT_SIZE)
-      );
-      regenerate(cols);
+      regenerate(colsForWrap(wrapRef.current));
     };
     img.src = "/Profile.webp";
   }, []);
@@ -93,10 +103,7 @@ const ProfileArt: React.FC = () => {
   useEffect(() => {
     if (!wrapRef.current) return;
     const ro = new ResizeObserver(() => {
-      const cols = Math.floor(
-        wrapRef.current!.clientWidth / getCharWidth(DISPLAY_FONT_SIZE)
-      );
-      regenerate(cols);
+      if (wrapRef.current) regenerate(colsForWrap(wrapRef.current));
     });
     ro.observe(wrapRef.current);
     return () => ro.disconnect();

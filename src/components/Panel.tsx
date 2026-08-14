@@ -7,7 +7,7 @@ type Props = React.HTMLAttributes<HTMLDivElement> & {
 
 const Panel: React.FC<Props> = ({ title, children, ...rest }) => (
   <PanelWrapper {...rest}>
-    <PanelTitle>─ {title} ─</PanelTitle>
+    <PanelTitle>{title}</PanelTitle>
     {children}
   </PanelWrapper>
 );

@@ -1,11 +1,12 @@
 import styled from "styled-components";
+import { bevelOut } from "./Chrome.styled";
 
 export const ChalPanel = styled.div`
-  border: 1px solid ${({ theme }) => theme.colors?.primary};
-  box-shadow: 0 0 0 2px ${({ theme }) => theme.colors?.body},
-    0 0 0 3px ${({ theme }) => theme.colors?.primary};
   margin: 0.75rem 0.25rem;
+  padding: 2px;
   font-size: 0.875rem;
+  background: ${({ theme }) => theme.colors?.body};
+  ${bevelOut}
 `;
 
 export const ChalHeader = styled.div`

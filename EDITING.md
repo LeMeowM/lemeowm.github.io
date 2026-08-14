@@ -21,7 +21,7 @@ Where a change touches more than one file, a script handles it — those section
 | Skills / Languages | `content/skills.ts` | Edit `languages`, `domains` |
 | Socials | `content/socials.ts` | Edit `socials` array |
 | MOTD tips | `content/tips.ts` | Edit `tips` array |
-| Nav bar buttons / footer links | `content/navigation.ts` | Edit `navItems`, `footerLinks` |
+| Start menu shortcuts / links | `content/navigation.ts` | Edit `navItems`, `footerLinks` |
 | Welcome screen copy + ASCII art | `content/welcome.ts` | Edit `welcome` object |
 | Manual pages (`man <cmd>`) | `content/man.ts` | Edit `manPages` record |
 | Themes | `content/themes.ts` | Add theme object |
@@ -35,7 +35,7 @@ Where a change touches more than one file, a script handles it — those section
 | New command | — | Run `python3 scripts/add_command.py` |
 
 > **Rule of thumb:** `content/` holds literals only. Anything *derived* from them (the
-> sidebar's top-5 languages, `open` targets, blog frontmatter parsing) is computed in
+> settings window's top-5 languages, `open` targets, blog frontmatter parsing) is computed in
 > `src/utils/` and needs no edit.
 
 ---
@@ -43,8 +43,8 @@ Where a change touches more than one file, a script handles it — those section
 ## Identity
 
 `content/profile.ts` is the single source of truth for the name, prompt, contact address and
-asset paths. It feeds the banner, the terminal prompt, the footer, `neofetch`, the welcome
-screen, and the `email` / `cv` commands.
+asset paths. It feeds the terminal prompt and window title, the Start menu, `neofetch`, the
+welcome screen, and the `email` / `cv` commands.
 
 ```typescript
 export const profile: Profile = {
@@ -130,7 +130,7 @@ a file in `public/files/` (served statically).
    tree.
 
 Files are then accessible via:
-- `cat files/lakectf-2025/crypto-Challenge/chall.py` (full-screen reader with syntax
+- `cat files/lakectf-2025/crypto-Challenge/chall.py` (opens a viewer window with syntax
   highlighting + download)
 - Direct URL `/files/lakectf-2025/crypto-Challenge/chall.py` (browser download)
 - Embed in blog posts via ` ```python src=/files/… ``` `
@@ -176,9 +176,9 @@ The `open` targets for `~/contact` are derived from this array automatically.
 
 ## Skills / Languages  ⚠ single source of truth
 
-The `skills` command, the `neofetch` output and the sidebar bar chart all read
-`content/skills.ts`. Edit the arrays there — do **not** add arrays to `Skills.tsx`,
-`Neofetch.tsx` or `Sidebar.tsx`.
+The `skills` command, the `neofetch` output and the bar chart on the settings window's
+**System** tab all read `content/skills.ts`. Edit the arrays there — do **not** add arrays to
+`Skills.tsx`, `Neofetch.tsx` or `SettingsWindow.tsx`.
 
 ```typescript
 export const languages: Language[] = [
@@ -195,7 +195,7 @@ export const domains: Domain[] = [
 ];
 ```
 
-The sidebar's top-5 selection is derived in `Sidebar.tsx` — no edit needed.
+The top-5 selection is derived in `SettingsWindow.tsx` — no edit needed.
 
 ---
 
@@ -232,7 +232,7 @@ Edit the `tips` array in `content/tips.ts`. One tip is shown per day of the mont
 
 ---
 
-## Nav Bar Buttons and Footer Links
+## Start Menu Shortcuts and Links
 
 Edit `content/navigation.ts`:
 
@@ -250,8 +250,10 @@ export const footerLinks: FooterLink[] = [
 ];
 ```
 
-`cmd` is the terminal command that fires when a banner button is clicked. `external: true`
-adds `target="_blank"`. The copyright line next to the links comes from `profile.copyright`.
+Both lists live in the **Start menu**: `navItems` become the shortcuts under "Run" and
+`footerLinks` the external links below them. `cmd` is the terminal command that fires when a
+shortcut is clicked. `external: true` adds `target="_blank"`. The copyright line at the top of
+the menu comes from `profile.copyright`.
 
 ---
 
@@ -289,11 +291,11 @@ Add a new theme object to the `theme` export in `content/themes.ts`:
 
 ```typescript
 {
-  id: "T_007",        // unique identifier
+  id: "T_009",        // unique identifier
   name: "my-theme",  // used by `themes set my-theme`
   colors: {
-    body:               "#…",  // page background
-    scrollHandle:       "#…",  // scrollbar thumb + code block background
+    body:               "#…",  // window client area (terminal background)
+    scrollHandle:       "#…",  // code block background
     scrollHandleHover:  "#…",
     primary:            "#…",  // accent — prompt, links, skill bars
     secondary:          "#…",  // headings, tags
@@ -302,11 +304,26 @@ Add a new theme object to the `theme` export in `content/themes.ts`:
       200: "#…",  // dimmed text
       300: "#…",  // muted/meta text
     },
+    chrome: {                     // the Windows 2000 shell around the content
+      face:          "#…",  // window/taskbar surface — Win2k's #C0C0C0
+      faceText:      "#…",  // text on that surface (also the darkest bevel edge)
+      faceHighlight: "#…",  // light bevel edge — usually white
+      faceShadow:    "#…",  // dark bevel edge — usually mid grey
+      titleActive:   ["#…", "#…"],  // title bar gradient [dark end, light end]
+      titleInactive: ["#…", "#…"],  // same, for unfocused windows
+      titleText:     "#…",  // title bar text
+      desktop:       ["#…", "#…"],  // wallpaper gradient [top, bottom]
+      desktopGrid:   "#…",  // horizon grid lines + the ASCII rain
+    },
   },
 }
 ```
 
-The theme appears immediately in `themes set my-theme` and `themes list`.
+The theme appears immediately in `themes set my-theme`, `themes list` and the scheme list in
+the Display Properties window — all three read the same object.
+
+Two schemes are worth copying from: `win2k` is the authentic grey/navy original, `nightcore`
+the pink-and-cyan one.
 
 ---
 
@@ -323,8 +340,8 @@ Adding a section means adding a directory here **and** a component wired into `c
 | Prefix | Example | Renders |
 |--------|---------|---------|
 | *(bare string)* | `"about"` | The matching component in `contentMap` (About, Blog, …) |
-| `blog-post:` | `"blog-post:2026-05-01-writeup"` | Full-screen blog reader |
-| `source-file:` | `"source-file:/files/ctf/chall.py"` | Full-screen code viewer (fetches file) |
+| `blog-post:` | `"blog-post:2026-05-01-writeup"` | Blog reader window (opens in front) |
+| `source-file:` | `"source-file:/files/ctf/chall.py"` | Code viewer window (fetches file) |
 
 `blog/` is declared here with only its `README.txt`; one entry per post in `content/blog/` is
 appended by `src/utils/filesystem.ts`. The `filesChildren` block is managed by

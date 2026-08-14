@@ -1,13 +1,15 @@
 import styled from "styled-components";
+import { grooveIn } from "./Chrome.styled";
 
+/** Win2k group box: a sunken groove with the title notched into its top edge. */
 export const PanelWrapper = styled.div`
   position: relative;
-  border: 1px solid ${({ theme }) => theme.colors?.primary};
-  padding: 0.75rem 1rem;
-  margin-top: 0.75rem;
+  padding: 0.9rem 1rem 0.75rem;
+  margin-top: 0.9rem;
   margin-bottom: 0.5rem;
   width: fit-content;
   max-width: 100%;
+  ${grooveIn}
 `;
 
 export const PanelTitle = styled.span`

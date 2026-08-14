@@ -1,5 +1,6 @@
 import { createGlobalStyle, DefaultTheme } from "styled-components";
 import { normalize } from "styled-normalize";
+import { chrome } from "./Chrome.styled";
 
 const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
   ${normalize}
@@ -33,26 +34,35 @@ const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
   body {
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 500;
-    background-color: ${({ theme }) => theme.colors?.body};
+    background-color: ${({ theme }) => chrome(theme).desktop[0]};
     color: ${({ theme }) => theme.colors?.text[100]};
+    overflow: hidden;
   }
 
-  /* ===== Custom Scroll Bar ===== */
-  /* width */
+  /* ===== Windows 2000 Scroll Bar ===== */
   ::-webkit-scrollbar {
-    width: 15px;
+    width: 16px;
+    height: 16px;
   }
   /* Track */
   ::-webkit-scrollbar-track {
-    background: ${({ theme }) => theme.colors?.body};
+    background: ${({ theme }) => chrome(theme).face};
+    opacity: 0.5;
   }
-  /* Handle */
+  /* Handle: a little raised chrome tile */
   ::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.colors?.scrollHandle};
+    background: ${({ theme }) => chrome(theme).face};
+    box-shadow:
+      inset -1px -1px 0 ${({ theme }) => chrome(theme).faceText},
+      inset 1px 1px 0 ${({ theme }) => chrome(theme).faceHighlight},
+      inset -2px -2px 0 ${({ theme }) => chrome(theme).faceShadow},
+      inset 2px 2px 0 ${({ theme }) => chrome(theme).faceHighlight};
   }
-  /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: ${({ theme }) => theme.colors?.scrollHandleHover};
+    background: ${({ theme }) => chrome(theme).faceHighlight};
+  }
+  ::-webkit-scrollbar-corner {
+    background: ${({ theme }) => chrome(theme).face};
   }
 
   input[type=text] {

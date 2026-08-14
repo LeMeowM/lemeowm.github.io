@@ -1,39 +1,14 @@
+// Body styles for the reader windows. The window frame, title bar and status
+// strip come from Chrome.styled — these are only the contents.
 import styled from "styled-components";
-
-export const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: ${({ theme }) => theme.colors?.body};
-  display: flex;
-  flex-direction: column;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.colors?.text[100]};
-  outline: none;
-`;
-
-export const TitleBar = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 1.25rem;
-  border-bottom: 1px solid ${({ theme }) => theme.colors?.primary};
-  color: ${({ theme }) => theme.colors?.primary};
-  font-weight: 700;
-  flex-shrink: 0;
-  user-select: none;
-`;
-
-export const TitleDate = styled.span`
-  color: ${({ theme }) => theme.colors?.text[300]};
-  font-weight: 400;
-`;
+import { bevelIn } from "./Chrome.styled";
 
 export const Content = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 1.25rem 2rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.875rem;
+  padding: 1rem 1.5rem;
   max-width: 94ch;
   margin: 0 auto;
   width: 100%;
@@ -118,10 +93,10 @@ export const Tag = styled.span`
 `;
 
 export const FileEmbedWrapper = styled.div`
-  border: 1px solid ${({ theme }) => theme.colors?.primary};
   margin: 0.75rem 0;
-  border-radius: 2px;
   overflow: hidden;
+  background: ${({ theme }) => theme.colors?.scrollHandle};
+  ${bevelIn}
 `;
 
 export const FileEmbedHeader = styled.div`
@@ -147,16 +122,4 @@ export const FileEmbedHeader = styled.div`
       text-decoration: underline;
     }
   }
-`;
-
-export const ReaderStatusBar = styled.div`
-  display: flex;
-  gap: 2rem;
-  padding: 0.4rem 1.25rem;
-  background: ${({ theme }) => theme.colors?.primary};
-  color: ${({ theme }) => theme.colors?.body};
-  flex-shrink: 0;
-  user-select: none;
-  font-size: 0.8rem;
-  flex-wrap: wrap;
 `;
