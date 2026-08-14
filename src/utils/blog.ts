@@ -1,4 +1,4 @@
-// Blog posts are loaded automatically from src/blog/*.md at build time via
+// Blog posts are loaded automatically from content/blog/*.md at build time via
 // Vite's import.meta.glob. To add a post, create a new .md file there with
 // the frontmatter below — no other code changes are required.
 //
@@ -30,7 +30,8 @@ export type BlogPost = {
   thumbnail?: string;
 };
 
-const modules = import.meta.glob("../blog/*.md", {
+// Kept relative rather than aliased — Vite resolves glob patterns statically.
+const modules = import.meta.glob("../../content/blog/*.md", {
   as: "raw",
   eager: true,
 }) as Record<string, string>;

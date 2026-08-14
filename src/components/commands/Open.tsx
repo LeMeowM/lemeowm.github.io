@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { termContext } from "../Terminal";
-import { openTargets } from "../../utils/content";
+import { openTargets } from "../../utils/openTargets";
 import { pathToString } from "../../utils/filesystem";
 import { UsageDiv, Wrapper, ErrorMsg } from "../styles/Output.styled";
 

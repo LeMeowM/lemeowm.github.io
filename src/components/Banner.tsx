@@ -1,4 +1,8 @@
+// The nav buttons live in content/navigation.ts, the prompt identity in
+// content/profile.ts — edit them there.
 import styled from "styled-components";
+import { navItems } from "@content/navigation";
+import { profile } from "@content/profile";
 
 type Props = {
   onCommand: (cmd: string) => void;
@@ -69,18 +73,11 @@ const Avatar = styled.img`
   }
 `;
 
-const navItems: { label: string; cmd: string }[] = [
-  { label: "ls", cmd: "ls" },
-  { label: "about", cmd: "about" },
-  { label: "projects", cmd: "cd projects" },
-  { label: "cv", cmd: "cv" },
-];
-
 const Banner: React.FC<Props> = ({ onCommand }) => (
   <BannerWrapper>
     <span style={{ display: "flex", alignItems: "center" }}>
-      <Avatar src="/Profile.webp" alt="Hugo" />
-      <User>visitor</User>@<Host>lemeowm.github.io</Host>:~$
+      <Avatar src={profile.avatar} alt={profile.name} />
+      <User>{profile.user}</User>@<Host>{profile.host}</Host>:~$
     </span>
     <Nav>
       {navItems.map(({ label, cmd }, i) => (

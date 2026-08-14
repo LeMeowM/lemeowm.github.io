@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { blogPosts } from "../../utils/content";
+import { blogPosts } from "../../utils/blog";
 import Panel from "../Panel";
 import {
   ItemList,

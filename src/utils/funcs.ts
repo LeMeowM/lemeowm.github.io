@@ -1,6 +1,6 @@
-import theme from "../components/styles/themes";
+import theme from "@content/themes";
 import { filesystem, getDirChildren, buildPath } from "./filesystem";
-import { openTargets } from "./content";
+import { openTargets } from "./openTargets";
 import { blogPosts } from "./blog";
 import { commandNames } from "../commands/meta";
 

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { eduBg } from "../../utils/content";
+import { eduBg } from "@content/education";
 import Panel from "../Panel";
 import { Intro } from "../styles/Output.styled";
 

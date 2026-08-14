@@ -1,17 +1,16 @@
 import { useEffect } from "react";
+import { profile } from "@content/profile";
 import { Wrapper } from "../styles/Output.styled";
-
-const CV_PATH = "/cv.pdf";
 
 const Cv: React.FC = () => {
   useEffect(() => {
-    window.open(CV_PATH, "_blank");
+    window.open(profile.cvPath, "_blank");
   }, []);
 
   return (
     <Wrapper>
-      Opening CV... (place your PDF at <code>public/cv.pdf</code> to enable
-      this)
+      Opening CV... (place your PDF at <code>public{profile.cvPath}</code> to
+      enable this)
     </Wrapper>
   );
 };

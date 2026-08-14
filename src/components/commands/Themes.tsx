@@ -8,7 +8,7 @@ import {
   isArgInvalid,
 } from "../../utils/funcs";
 import { termContext } from "../Terminal";
-import theme from "../styles/themes";
+import theme from "@content/themes";
 import Usage from "../Usage";
 
 const myThemes = Object.keys(theme);

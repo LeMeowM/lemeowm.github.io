@@ -1,6 +1,7 @@
 import styled, { useTheme } from "styled-components";
 import Panel from "../Panel";
-import { languages, domains } from "../../utils/content";
+import { profile } from "@content/profile";
+import { languages, domains } from "@content/skills";
 
 const startTime = Date.now();
 
@@ -78,8 +79,8 @@ const Neofetch: React.FC = () => {
   ].filter(Boolean) as string[];
 
   const rows: [string, string][] = [
-    ["user", "hugo@lemeowm.github.io"],
-    ["os", "lemeowm.github.io"],
+    ["user", `${profile.neofetchUser}@${profile.host}`],
+    ["os", profile.host],
     ["host", "Terminal Portfolio"],
     ["kernel", "React 18 + TypeScript 5"],
     ["shell", "vite-react-tsx"],
@@ -96,7 +97,7 @@ const Neofetch: React.FC = () => {
         <Art>{CAT_ART}</Art>
         <Info>
           <div>
-            <Label>hugo</Label>@<Label>lemeowm.github.io</Label>
+            <Label>{profile.neofetchUser}</Label>@<Label>{profile.host}</Label>
           </div>
           <Sep>{"─".repeat(32)}</Sep>
           {rows.map(([label, value]) => (

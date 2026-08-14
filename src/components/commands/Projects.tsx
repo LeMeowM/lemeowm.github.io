@@ -1,4 +1,4 @@
-import { projects } from "../../utils/content";
+import { projects } from "@content/projects";
 import Panel from "../Panel";
 import {
   ItemList,

@@ -6,7 +6,7 @@ Scaffold a new terminal command across the three files that must stay in sync:
   - src/components/commands/<Name>.tsx  (scaffold component)
 
 Usage:
-  python3 add_command.py <name> "<description>" [--args]
+  python3 scripts/add_command.py <name> "<description>" [--args]
 
 Arguments:
   name          Command name — lowercase, no spaces (e.g. ctf)
@@ -14,7 +14,7 @@ Arguments:
   --args        Pass this flag if the command reads user arguments
 
 Example:
-  python3 add_command.py ctf "list CTF challenges" --args
+  python3 scripts/add_command.py ctf "list CTF challenges" --args
 
 After running, open src/components/commands/<Name>.tsx and implement the body.
 The command will immediately appear in `help` and tab-completion.
@@ -24,7 +24,7 @@ import sys
 import re
 from pathlib import Path
 
-REPO = Path(__file__).parent
+REPO = Path(__file__).parent.parent
 META_TS      = REPO / "src" / "commands" / "meta.ts"
 REGISTRY_TSX = REPO / "src" / "commands" / "registry.tsx"
 COMMANDS_DIR = REPO / "src" / "components" / "commands"

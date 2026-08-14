@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { tips } from "../../utils/content";
+import { tips } from "@content/tips";
 
 const MotdWrapper = styled.div`
   margin-top: 0.25rem;

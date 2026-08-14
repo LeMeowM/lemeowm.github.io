@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Sync public/files/ into the filesChildren block in src/utils/filesystem.ts.
+Sync public/files/ into the filesChildren block in content/tree.ts.
 
 This script is the canonical way to register source files for the terminal.
 Do NOT hand-edit the filesChildren block — run this script instead.
 
-Usage (from repo root):
-  python3 sync_files.py
+Usage (from anywhere):
+  python3 scripts/sync_files.py
 
 Workflow:
   1. Drop files into public/files/<ctf-name>/  (any directory depth)
@@ -18,9 +18,9 @@ Workflow:
 from pathlib import Path
 import sys
 
-REPO_ROOT = Path(__file__).parent
+REPO_ROOT = Path(__file__).parent.parent
 PUBLIC_FILES = REPO_ROOT / "public" / "files"
-FILESYSTEM_TS = REPO_ROOT / "src" / "utils" / "filesystem.ts"
+TREE_TS = REPO_ROOT / "content" / "tree.ts"
 
 START_MARKER = "const filesChildren: Record<string, FSDir | FSFile> = {"
 END_MARKER = "\n};"
@@ -59,14 +59,14 @@ def build_block() -> str:
 
 
 def main() -> None:
-    if not FILESYSTEM_TS.exists():
-        sys.exit(f"error: {FILESYSTEM_TS} not found")
+    if not TREE_TS.exists():
+        sys.exit(f"error: {TREE_TS} not found")
 
-    content = FILESYSTEM_TS.read_text(encoding="utf-8")
+    content = TREE_TS.read_text(encoding="utf-8")
 
     start = content.find(START_MARKER)
     if start == -1:
-        sys.exit("error: filesChildren block not found in filesystem.ts")
+        sys.exit("error: filesChildren block not found in tree.ts")
 
     end = content.find(END_MARKER, start)
     if end == -1:
@@ -74,10 +74,10 @@ def main() -> None:
     end += len(END_MARKER)
 
     new_content = content[:start] + build_block() + content[end:]
-    FILESYSTEM_TS.write_text(new_content, encoding="utf-8")
+    TREE_TS.write_text(new_content, encoding="utf-8")
 
     total = sum(1 for _ in PUBLIC_FILES.rglob("*")) if PUBLIC_FILES.exists() else 0
-    print(f"synced {total} items from public/files/ → filesystem.ts")
+    print(f"synced {total} items from public/files/ → content/tree.ts")
 
 
 if __name__ == "__main__":

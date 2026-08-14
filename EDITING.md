@@ -1,6 +1,11 @@
 # Site Editing Guide
 
-Quick reference for updating each type of content on the portfolio. Where a change touches more than one file, a script handles it — those sections are marked **script-maintained**.
+Everything you can change without touching code lives in **`content/`**. Static assets that
+are served as-is (images, PDFs, CTF source files) live in **`public/`**. `src/` is code and
+should not need editing to change what the site *says*.
+
+Where a change touches more than one file, a script handles it — those sections are marked
+**script-maintained**.
 
 ---
 
@@ -8,22 +13,65 @@ Quick reference for updating each type of content on the portfolio. Where a chan
 
 | Content | File(s) | How |
 |---------|---------|-----|
-| Blog post | `src/blog/*.md` | Create file (auto-detected) |
-| CTF source files | `public/files/…` | Drop files, run `python3 sync_files.py` |
-| Projects | `src/utils/content.ts` | Edit `projects` array (add `thumbnail?` for image) |
-| Socials | `src/utils/content.ts` | Edit `socials` array |
+| Name, email, GitHub, prompt, copyright | `content/profile.ts` | Edit `profile` object |
+| About / Bio | `content/about.md` | Edit Markdown (`**bold**` renders highlighted) |
+| Projects | `content/projects.ts` | Edit `projects` array (add `thumbnail?` for image) |
+| Work experience | `content/experience.ts` | Edit `jobs` array (add `thumbnail?` for image) |
+| Education | `content/education.ts` | Edit `eduBg` array |
+| Skills / Languages | `content/skills.ts` | Edit `languages`, `domains` |
+| Socials | `content/socials.ts` | Edit `socials` array |
+| MOTD tips | `content/tips.ts` | Edit `tips` array |
+| Nav bar buttons / footer links | `content/navigation.ts` | Edit `navItems`, `footerLinks` |
+| Welcome screen copy + ASCII art | `content/welcome.ts` | Edit `welcome` object |
+| Manual pages (`man <cmd>`) | `content/man.ts` | Edit `manPages` record |
+| Themes | `content/themes.ts` | Add theme object |
+| Blog post | `content/blog/*.md` | Create file (auto-detected) |
+| Filesystem sections | `content/tree.ts` | Edit `staticTree` |
+| CTF source files | `public/files/…` | Drop files, run `python3 scripts/sync_files.py` |
 | Thumbnails | `public/thumbnails/` | Drop image, add path to data entry |
-| Skills / Languages | `src/utils/content.ts` | Edit `languages`, `domains`, `sidebarLangs` |
-| Education | `src/components/commands/Education.tsx` | Edit `eduBg` array |
-| Work experience | `src/components/commands/Experience.tsx` | Edit `jobs` array (add `thumbnail?` for image) |
-| About / Bio | `src/components/commands/About.tsx` | Edit JSX |
-| MOTD tips | `src/components/commands/Motd.tsx` | Edit `tips` array |
-| Nav bar buttons | `src/components/Banner.tsx` | Edit `navItems` array |
-| Footer links | `src/components/Footer.tsx` | Edit `Link` elements |
-| Themes | `src/components/styles/themes.ts` | Add theme object |
-| New command | — | Run `python3 add_command.py` |
 | CV PDF | `public/cv.pdf` | Drop file, no code change |
 | Profile picture | `public/Profile.webp` | Drop file, no code change |
+| Page title / social preview | `index.html` | Edit `<title>` and the `og:` / `twitter:` meta |
+| New command | — | Run `python3 scripts/add_command.py` |
+
+> **Rule of thumb:** `content/` holds literals only. Anything *derived* from them (the
+> sidebar's top-5 languages, `open` targets, blog frontmatter parsing) is computed in
+> `src/utils/` and needs no edit.
+
+---
+
+## Identity
+
+`content/profile.ts` is the single source of truth for the name, prompt, contact address and
+asset paths. It feeds the banner, the terminal prompt, the footer, `neofetch`, the welcome
+screen, and the `email` / `cv` commands.
+
+```typescript
+export const profile: Profile = {
+  name: "Hugo Noublanche",
+  user: "visitor",              // shown as visitor@host:~$
+  host: "lemeowm.github.io",
+  neofetchUser: "hugo",         // neofetch header only
+  email: "hugo.noublanche@epfl.ch",
+  github: "https://github.com/lemeowm",
+  githubLabel: "github.com/lemeowm",
+  sourceRepo: "https://github.com/lemeowm/lemeowm.github.io",
+  avatar: "/Profile.webp",
+  cvPath: "/cv.pdf",
+  copyright: "© 2026 Hugo Noublanche",
+};
+```
+
+The `<title>` and Open Graph tags in `index.html` are **not** sourced from here — crawlers
+read them before any JavaScript runs, so they stay hand-written. Update them there when the
+name or description changes.
+
+---
+
+## About / Bio
+
+Edit `content/about.md`. It is rendered with `react-markdown`, and `**bold**` maps to the
+`Highlight` style (bold in the theme's body colour). Blank lines separate paragraphs.
 
 ---
 
@@ -31,7 +79,8 @@ Quick reference for updating each type of content on the portfolio. Where a chan
 
 **Auto-detected** — no code changes needed.
 
-1. Create `src/blog/<slug>.md` where `<slug>` is the URL-safe identifier (e.g. `2026-05-01-lakectf-writeup`).
+1. Create `content/blog/<slug>.md` where `<slug>` is the URL-safe identifier
+   (e.g. `2026-05-01-lakectf-writeup`).
 2. Add YAML frontmatter at the top:
 
 ```
@@ -46,23 +95,26 @@ Markdown body here…
 ```
 
 The post appears immediately in `cat blog/<slug>.md`, `grep`, and the blog listing.
+Posts are sorted newest-first by `date`.
 
 ### Embedding a hosted source file inside a post
 
-Use a code fence with a `src=` meta attribute. The fence body is ignored — the file is fetched at render time.
+Use a code fence with a `src=` meta attribute. The fence body is ignored — the file is
+fetched at render time.
 
 ````markdown
 ```python src=/files/lakectf-2025/chall.py
 ```
 ````
 
-This renders as a collapsible file embed with a download button. The `src` path must point to a file in `public/files/` (served statically).
+This renders as a collapsible file embed with a download button. The `src` path must point to
+a file in `public/files/` (served statically).
 
 ---
 
 ## CTF / Source Files  ⚠ script-maintained
 
-> `filesChildren` in `src/utils/filesystem.ts` is generated by `sync_files.py`.  
+> `filesChildren` in `content/tree.ts` is generated by `scripts/sync_files.py`.
 > Do not hand-edit that block.
 
 1. Drop files into `public/files/<ctf-name>/`:
@@ -70,14 +122,16 @@ This renders as a collapsible file embed with a download button. The `src` path 
    public/files/lakectf-2025/crypto-Challenge/chall.py
    public/files/lakectf-2025/crypto-Challenge/solve.sage
    ```
-2. Run the sync script from the repo root:
+2. Run the sync script:
    ```
-   python3 sync_files.py
+   python3 scripts/sync_files.py
    ```
-   The script rewrites the `filesChildren` block in `filesystem.ts` to match the directory tree.
+   The script rewrites the `filesChildren` block in `content/tree.ts` to match the directory
+   tree.
 
 Files are then accessible via:
-- `cat files/lakectf-2025/crypto-Challenge/chall.py` (full-screen reader with syntax highlighting + download)
+- `cat files/lakectf-2025/crypto-Challenge/chall.py` (full-screen reader with syntax
+  highlighting + download)
 - Direct URL `/files/lakectf-2025/crypto-Challenge/chall.py` (browser download)
 - Embed in blog posts via ` ```python src=/files/… ``` `
 
@@ -85,7 +139,7 @@ Files are then accessible via:
 
 ## Projects
 
-Edit the `projects` array in `src/utils/content.ts`:
+Edit the `projects` array in `content/projects.ts`:
 
 ```typescript
 export const projects: Project[] = [
@@ -100,13 +154,14 @@ export const projects: Project[] = [
 ];
 ```
 
-The `openTargets` map at the bottom of the file is derived from `projects` automatically — no separate edit needed.
+The `open` targets are derived from this array in `src/utils/openTargets.ts` — no separate
+edit needed.
 
 ---
 
 ## Socials
 
-Edit the `socials` array in `src/utils/content.ts`:
+Edit the `socials` array in `content/socials.ts`:
 
 ```typescript
 export const socials: Social[] = [
@@ -115,17 +170,17 @@ export const socials: Social[] = [
 ];
 ```
 
-The `openTargets.contact` entry is derived from `socials` automatically.
+The `open` targets for `~/contact` are derived from this array automatically.
 
 ---
 
 ## Skills / Languages  ⚠ single source of truth
 
-Both the `skills` command output and the sidebar bar chart read from `src/utils/content.ts`. Edit the arrays there — do **not** touch `Skills.tsx` or `Sidebar.tsx` directly.
+The `skills` command, the `neofetch` output and the sidebar bar chart all read
+`content/skills.ts`. Edit the arrays there — do **not** add arrays to `Skills.tsx`,
+`Neofetch.tsx` or `Sidebar.tsx`.
 
 ```typescript
-// src/utils/content.ts
-
 export const languages: Language[] = [
   { name: "Python", level: 9, label: "Advanced"     },
   { name: "Rust",   level: 8, label: "Advanced"     },
@@ -138,18 +193,18 @@ export const domains: Domain[] = [
   "Cryptography",
   // free-form strings, joined with " · " in the skills output
 ];
-
-// sidebarLangs is auto-derived: top-5 by level, no edit needed.
 ```
+
+The sidebar's top-5 selection is derived in `Sidebar.tsx` — no edit needed.
 
 ---
 
 ## Education
 
-Edit the `eduBg` array in `src/components/commands/Education.tsx`:
+Edit the `eduBg` array in `content/education.ts`:
 
 ```typescript
-const eduBg = [
+export const eduBg: EduEntry[] = [
   { title: "BSc Computer Science — EPFL", desc: "2023 – present" },
   // …
 ];
@@ -159,10 +214,10 @@ const eduBg = [
 
 ## Work Experience
 
-Edit the `jobs` array in `src/components/commands/Experience.tsx`:
+Edit the `jobs` array in `content/experience.ts`:
 
 ```typescript
-const jobs: Job[] = [
+export const jobs: Job[] = [
   { title: "Role — Company", desc: "Date range. One-line summary." },
   { title: "Role — Company", desc: "…", thumbnail: "/thumbnails/company-logo.png" },
   // …
@@ -171,44 +226,66 @@ const jobs: Job[] = [
 
 ---
 
-## About / Bio
-
-Edit `src/components/commands/About.tsx` directly. The file is plain JSX — change text, add `<span>` highlights, etc. The `Highlight` styled component applies the primary theme colour.
-
----
-
 ## MOTD Tips
 
-Edit the `tips` array in `src/components/commands/Motd.tsx`. Each entry is a string shown at random when the user runs `motd`.
+Edit the `tips` array in `content/tips.ts`. One tip is shown per day of the month.
 
 ---
 
-## Nav Bar Buttons
+## Nav Bar Buttons and Footer Links
 
-Edit the `navItems` array in `src/components/Banner.tsx`:
+Edit `content/navigation.ts`:
 
 ```typescript
-const navItems = [
+export const navItems: NavItem[] = [
   { label: "ls",       cmd: "ls"           },
   { label: "about",    cmd: "about"        },
   { label: "projects", cmd: "cd projects"  },
   { label: "cv",       cmd: "cv"           },
 ];
+
+export const footerLinks: FooterLink[] = [
+  { label: profile.email,       url: `mailto:${profile.email}`      },
+  { label: profile.githubLabel, url: profile.github, external: true },
+];
 ```
 
-`cmd` is the terminal command that fires when the button is clicked.
+`cmd` is the terminal command that fires when a banner button is clicked. `external: true`
+adds `target="_blank"`. The copyright line next to the links comes from `profile.copyright`.
 
 ---
 
-## Footer Links
+## Welcome Screen
 
-Edit the `Link` elements in `src/components/Footer.tsx`. The footer also contains the copyright year — update it manually when needed.
+Edit `content/welcome.ts`. The ASCII banners are template literals (escape backslashes), and
+the prose is split into segments so command tokens can be styled:
+
+```typescript
+hints: [
+  { before: "Type ", cmd: "ls", after: " to see available sections." },
+],
+```
+
+---
+
+## Manual Pages
+
+Edit the `manPages` record in `content/man.ts`. Each key must match a command name in
+`src/commands/meta.ts`:
+
+```typescript
+ls: {
+  synopsis: "ls [-l] [-R] [--tree] [--help] [path]",
+  description: "List directory contents. …",   // first sentence becomes the NAME line
+  examples: ["ls", "ls -l", "ls --tree"],
+},
+```
 
 ---
 
 ## Themes
 
-Add a new theme object to the `theme` export in `src/components/styles/themes.ts`:
+Add a new theme object to the `theme` export in `content/themes.ts`:
 
 ```typescript
 {
@@ -233,13 +310,36 @@ The theme appears immediately in `themes set my-theme` and `themes list`.
 
 ---
 
+## Filesystem Sections
+
+`content/tree.ts` defines which directories and files the terminal shows. Key order matters —
+`ls` lists entries in declaration order (directories first).
+
+Adding a section means adding a directory here **and** a component wired into `contentMap` in
+`Cat.tsx` and `dirContent` in `Cd.tsx` — that part is code.
+
+`FSFile.content` is a routing key telling `cat` what to render:
+
+| Prefix | Example | Renders |
+|--------|---------|---------|
+| *(bare string)* | `"about"` | The matching component in `contentMap` (About, Blog, …) |
+| `blog-post:` | `"blog-post:2026-05-01-writeup"` | Full-screen blog reader |
+| `source-file:` | `"source-file:/files/ctf/chall.py"` | Full-screen code viewer (fetches file) |
+
+`blog/` is declared here with only its `README.txt`; one entry per post in `content/blog/` is
+appended by `src/utils/filesystem.ts`. The `filesChildren` block is managed by
+`scripts/sync_files.py`.
+
+---
+
 ## Adding a Command  ⚠ script-maintained
 
-> `commandMeta` in `meta.ts` and the `components` map in `registry.tsx` are patched by `add_command.py`.  
+> `commandMeta` in `src/commands/meta.ts` and the `components` map in
+> `src/commands/registry.tsx` are patched by `scripts/add_command.py`.
 > Do not hand-edit those sections.
 
 ```
-python3 add_command.py <name> "<description>" [--args]
+python3 scripts/add_command.py <name> "<description>" [--args]
 ```
 
 | Argument | Meaning |
@@ -250,10 +350,12 @@ python3 add_command.py <name> "<description>" [--args]
 
 **Example:**
 ```
-python3 add_command.py ctf "list CTF challenges" --args
+python3 scripts/add_command.py ctf "list CTF challenges" --args
 ```
 
-This creates `src/components/commands/Ctf.tsx` (scaffold) and patches `meta.ts` and `registry.tsx`. Open the scaffold and implement the component body — everything else is wired up.
+This creates `src/components/commands/Ctf.tsx` (scaffold) and patches `meta.ts` and
+`registry.tsx`. Open the scaffold and implement the component body — everything else is wired
+up. Add a manual page for it in `content/man.ts`.
 
 ---
 
@@ -264,7 +366,7 @@ Blog, projects, and experience panels all support optional thumbnail images.
 1. Drop the image in `public/thumbnails/` (png, jpg, or webp)
 2. Reference it by path string in the data:
 
-   **Blog** — add `thumbnail:` to the post's frontmatter in `src/blog/<slug>.md`:
+   **Blog** — add `thumbnail:` to the post's frontmatter in `content/blog/<slug>.md`:
    ```
    ---
    title: "Post title"
@@ -275,12 +377,12 @@ Blog, projects, and experience panels all support optional thumbnail images.
    ---
    ```
 
-   **Projects** — add `thumbnail` field to the entry in `src/utils/content.ts`:
+   **Projects** — add `thumbnail` to the entry in `content/projects.ts`:
    ```typescript
    { id: 1, title: "…", desc: "…", url: "…", thumbnail: "/thumbnails/project-name.png" },
    ```
 
-   **Experience** — add `thumbnail` field to the entry in `src/components/commands/Experience.tsx`:
+   **Experience** — add `thumbnail` to the entry in `content/experience.ts`:
    ```typescript
    { title: "Role — Company", desc: "…", thumbnail: "/thumbnails/company-logo.png" },
    ```
@@ -289,23 +391,9 @@ Omitting the field entirely hides the thumbnail slot with no layout shift.
 
 ---
 
-## Filesystem Content Key Reference
-
-`FSFile.content` strings tell `cat` what to render:
-
-| Prefix | Example | Renders |
-|--------|---------|---------|
-| *(bare string)* | `"about"` | The matching component in `contentMap` (About, Blog, …) |
-| `blog-post:` | `"blog-post:2026-05-01-writeup"` | Full-screen blog reader |
-| `source-file:` | `"source-file:/files/ctf/chall.py"` | Full-screen code viewer (fetches file) |
-
-The `filesChildren` block in `filesystem.ts` is managed by `sync_files.py` and uses `source-file:` keys automatically.
-
----
-
 ## Script Reference
 
 | Script | Manages | When to run |
 |--------|---------|-------------|
-| `python3 sync_files.py` | `filesChildren` in `src/utils/filesystem.ts` | After adding/removing files in `public/files/` |
-| `python3 add_command.py` | `commandMeta` in `meta.ts`, `components` in `registry.tsx`, scaffold `.tsx` | When adding a new terminal command |
+| `python3 scripts/sync_files.py` | `filesChildren` in `content/tree.ts` | After adding/removing files in `public/files/` |
+| `python3 scripts/add_command.py` | `commandMeta` in `meta.ts`, `components` in `registry.tsx`, scaffold `.tsx` | When adding a new terminal command |

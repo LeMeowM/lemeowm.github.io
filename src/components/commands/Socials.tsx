@@ -1,6 +1,6 @@
 import { Cmd, CmdDesc, CmdList, HelpWrapper } from "../styles/Help.styled";
 import { Link } from "../styles/Welcome.styled";
-import { socials } from "../../utils/content";
+import { socials } from "@content/socials";
 import { Intro } from "../styles/Output.styled";
 
 const Socials: React.FC = () => {

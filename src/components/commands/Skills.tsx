@@ -1,7 +1,7 @@
-// Skill data lives in src/utils/content.ts (languages, domains).
+// Skill data lives in content/skills.ts (languages, domains).
 // Edit it there — do not add separate arrays here.
 import styled from "styled-components";
-import { languages, domains } from "../../utils/content";
+import { languages, domains } from "@content/skills";
 import Panel from "../Panel";
 
 const Section = styled.div`

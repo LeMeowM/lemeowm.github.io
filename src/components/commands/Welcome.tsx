@@ -1,4 +1,7 @@
+// The welcome copy and ASCII banners live in content/welcome.ts — edit them there.
 import styled from "styled-components";
+import { profile } from "@content/profile";
+import { welcome } from "@content/welcome";
 import {
   Cmd,
   HeroContainer,
@@ -18,60 +21,45 @@ const CvHint = styled.div`
 `;
 
 const Welcome: React.FC = () => {
+  const { asciiName, asciiNameMobile, intro, hints, cvHint, source } = welcome;
+
   return (
     <HeroContainer data-testid="welcome">
       <div className="info-section">
-        <PreName>
-          {`
-           /$$   /$$
-          | $$  | $$
-  /$$$$$$ | $$ /$$$$$$   /$$$$$$/$$$$   /$$$$$$   /$$$$$$  /$$  /$$  /$$
- |____  $$| $$|_  $$_/  | $$_  $$_  $$ /$$__  $$ /$$__  $$| $$ | $$ | $$
-  /$$$$$$$| $$  | $$    | $$ \\ $$ \\ $$| $$$$$$$$| $$  \\ $$| $$ | $$ | $$
- /$$__  $$| $$  | $$ /$$| $$ | $$ | $$| $$_____/| $$  | $$| $$ | $$ | $$
-|  $$$$$$$| $$  |  $$$$/| $$ | $$ | $$|  $$$$$$$|  $$$$$$/|  $$$$$/$$$$/
- \\_______/|__/   \\___/  |__/ |__/ |__/ \\_______/ \\______/  \\_____/\\___/
-          `}
-        </PreName>
+        <PreName>{asciiName}</PreName>
         <PreWrapper>
-          <PreNameMobile>
-            {`
-        _ _
-       | | |
-   __ _| | |_ _ __ ___   ___  _____      __
-  / _\` | | __| '_ \` _ \\ / _ \\/ _ \\ \\ /\\ / /
- | (_| | | |_| | | | | |  __/ (_) \\ V  V /
-  \\__,_|_|\\__|_| |_| |_|\\___|\\___/ \\_/\\_/
-          `}
-          </PreNameMobile>
+          <PreNameMobile>{asciiNameMobile}</PreNameMobile>
         </PreWrapper>
-        <div>Welcome to my terminal portfolio.</div>
+        <div>{intro}</div>
         <Seperator>----</Seperator>
-        <div>
-          Type <Cmd>ls</Cmd> to see available sections.
-        </div>
-        <div>
-          Type <Cmd>cd &lt;dir&gt;</Cmd> to navigate into a section.
-        </div>
-        <div>
-          Type <Cmd>cat &lt;file&gt;</Cmd> to read a file.
-        </div>
+        {hints.map(({ before, cmd, after }) => (
+          <div key={cmd}>
+            {before}
+            <Cmd>{cmd}</Cmd>
+            {after}
+          </div>
+        ))}
         <Seperator>----</Seperator>
         <CvHint>
-          Not a terminal person? Just type <Cmd>cv</Cmd> and press{" "}
-          <Cmd>Enter</Cmd> to download my CV as a PDF.
+          {cvHint.before}
+          <Cmd>{cvHint.cmd}</Cmd>
+          {cvHint.middle}
+          <Cmd>{cvHint.key}</Cmd>
+          {cvHint.after}
         </CvHint>
         <Seperator>----</Seperator>
         <div>
-          Source code on{" "}
+          {source.before}
           <Link
-            href="https://github.com/lemeowm/lemeowm.github.io"
+            href={profile.sourceRepo}
             target="_blank"
             rel="noopener noreferrer"
           >
-            GitHub
+            {source.label}
           </Link>
-          . Type <Cmd>help</Cmd> for all commands.
+          {source.middle}
+          <Cmd>{source.cmd}</Cmd>
+          {source.after}
         </div>
       </div>
     </HeroContainer>

@@ -1,8 +1,12 @@
 // ── Command metadata ────────────────────────────────────────────────────────
-// This file and registry.tsx are managed by add_command.py.
-// To add a new command run:  python3 add_command.py <name> "<desc>" [--args]
+// This file and registry.tsx are managed by scripts/add_command.py.
+// To add a new command run:  python3 scripts/add_command.py <name> "<desc>" [--args]
 // That script patches commandMeta here and the components map in registry.tsx,
 // then creates a scaffold component in src/components/commands/.
+//
+// Manual pages for these commands are content — see content/man.ts.
+
+import { profile } from "@content/profile";
 
 /** History entry: the raw command string and the cwd at the time it was run. */
 export type CmdEntry = {
@@ -45,7 +49,7 @@ export const commandMeta: CommandMeta[] = [
   { name: "open", desc: "open a file or URL", tab: 9, acceptsArgs: true },
   { name: "pwd", desc: "print working directory", tab: 10 },
   { name: "themes", desc: "check available themes", tab: 7, acceptsArgs: true },
-  { name: "about", desc: "about Hugo", tab: 6 },
+  { name: "about", desc: `about ${profile.name.split(" ")[0]}`, tab: 6 },
   { name: "whoami", desc: "about current user", tab: 7 },
   { name: "skills", desc: "show languages and domains", tab: 7 },
   { name: "grep", desc: "search blog post content", tab: 7, acceptsArgs: true },

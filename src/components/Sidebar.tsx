@@ -1,9 +1,14 @@
 import styled from "styled-components";
-import { sidebarLangs } from "../utils/content";
+import { languages } from "@content/skills";
 import ProfileArt from "./commands/ProfileArt";
 
-// Skill data lives in src/utils/content.ts (sidebarLangs).
+// Skill data lives in content/skills.ts.
 // Edit it there — do not add a separate array here.
+
+/** Top-N languages for the bar chart, strongest first. */
+const sidebarLangs = [...languages]
+  .sort((a, b) => b.level - a.level)
+  .slice(0, 5);
 
 // BLOCKS intentionally overflows the SkillBar span; the span clips it naturally
 // via overflow:hidden + flex:1, filling the full available width.

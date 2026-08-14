@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import themes from "../components/styles/themes";
+import themes from "@content/themes";
 import { setToLS, getFromLS } from "../utils/storage";
 import { DefaultTheme } from "styled-components";
 

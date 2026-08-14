@@ -1,4 +1,8 @@
+// The footer links live in content/navigation.ts, the copyright line in
+// content/profile.ts — edit them there.
 import styled from "styled-components";
+import { footerLinks } from "@content/navigation";
+import { profile } from "@content/profile";
 
 const FooterWrapper = styled.footer`
   padding: 0.5rem 1.25rem;
@@ -34,16 +38,19 @@ const Link = styled.a`
 
 const Footer = () => (
   <FooterWrapper>
-    <span>© 2026 Hugo Noublanche</span>
+    <span>{profile.copyright}</span>
     <Links>
-      <Link href="mailto:hugo.noublanche@epfl.ch">hugo.noublanche@epfl.ch</Link>
-      <Link
-        href="https://github.com/lemeowm"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        github.com/lemeowm
-      </Link>
+      {footerLinks.map(({ label, url, external }) => (
+        <Link
+          key={url}
+          href={url}
+          {...(external
+            ? { target: "_blank", rel: "noopener noreferrer" }
+            : {})}
+        >
+          {label}
+        </Link>
+      ))}
     </Links>
   </FooterWrapper>
 );

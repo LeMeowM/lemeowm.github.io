@@ -3,6 +3,7 @@
 
 # Except this folder
 !/src
+!/content
 !/.github
 !tsconfig.json
 !tsconfig.node.json
