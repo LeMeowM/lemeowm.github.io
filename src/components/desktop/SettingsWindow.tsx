@@ -16,13 +16,16 @@ import {
   GroupBox,
   GroupLegend,
   ListBox,
+  ListBoxBody,
   ListItem,
   PushButton,
   StatusCell,
   TabButton,
   TabPanel,
+  TabPanelBody,
   TabStrip,
 } from "../styles/Chrome.styled";
+import ScrollArea from "./ScrollArea";
 import Window from "./Window";
 import { PANELS } from "./panels";
 import { useWindows } from "./windowManager";
@@ -212,67 +215,71 @@ const SettingsWindow: React.FC<Props> = ({ themeName, className }) => {
       </TabStrip>
 
       <TabPanel role="tabpanel">
-        {tab === "appearance" ? (
-          <>
-            <Preview aria-hidden="true">
-              <MiniWindow>
-                <MiniTitle>Terminal</MiniTitle>
-                <MiniBody>
-                  {profile.user}@{profile.host}:~$ _
-                </MiniBody>
-              </MiniWindow>
-            </Preview>
-            <Row style={{ marginTop: 8 }}>
+        <ScrollArea viewportAs={TabPanelBody}>
+          {tab === "appearance" ? (
+            <>
+              <Preview aria-hidden="true">
+                <MiniWindow>
+                  <MiniTitle>Terminal</MiniTitle>
+                  <MiniBody>
+                    {profile.user}@{profile.host}:~$ _
+                  </MiniBody>
+                </MiniWindow>
+              </Preview>
+              <Row style={{ marginTop: 8 }}>
+                <GroupBox>
+                  <GroupLegend>Scheme</GroupLegend>
+                  <Scheme>
+                    <ScrollArea viewportAs={ListBoxBody}>
+                      {themeNames.map(name => (
+                        <ListItem
+                          key={name}
+                          type="button"
+                          ref={name === themeName ? selectedRef : undefined}
+                          $selected={name === themeName}
+                          onClick={() => apply(name)}
+                        >
+                          {name === themeName ? "▸ " : "  "}
+                          {name}
+                        </ListItem>
+                      ))}
+                    </ScrollArea>
+                  </Scheme>
+                </GroupBox>
+              </Row>
+            </>
+          ) : (
+            <>
               <GroupBox>
-                <GroupLegend>Scheme</GroupLegend>
-                <Scheme>
-                  {themeNames.map(name => (
-                    <ListItem
-                      key={name}
-                      type="button"
-                      ref={name === themeName ? selectedRef : undefined}
-                      $selected={name === themeName}
-                      onClick={() => apply(name)}
-                    >
-                      {name === themeName ? "▸ " : "  "}
-                      {name}
-                    </ListItem>
-                  ))}
-                </Scheme>
+                <GroupLegend>Skills</GroupLegend>
+                {topLangs.map(({ name, level }) => {
+                  const filled = Math.round((level / 10) * BLOCKS);
+                  const bar = "█".repeat(filled) + "░".repeat(BLOCKS - filled);
+                  return (
+                    <SkillRow key={name}>
+                      <SkillName>{name}</SkillName>
+                      <SkillBar>{bar}</SkillBar>
+                      <span>{level}</span>
+                    </SkillRow>
+                  );
+                })}
               </GroupBox>
-            </Row>
-          </>
-        ) : (
-          <>
-            <GroupBox>
-              <GroupLegend>Skills</GroupLegend>
-              {topLangs.map(({ name, level }) => {
-                const filled = Math.round((level / 10) * BLOCKS);
-                const bar = "█".repeat(filled) + "░".repeat(BLOCKS - filled);
-                return (
-                  <SkillRow key={name}>
-                    <SkillName>{name}</SkillName>
-                    <SkillBar>{bar}</SkillBar>
-                    <span>{level}</span>
-                  </SkillRow>
-                );
-              })}
-            </GroupBox>
-            <GroupBox style={{ marginTop: 8 }}>
-              <GroupLegend>System</GroupLegend>
-              <Stats>
-                <dt>Host</dt>
-                <dd>{profile.host}</dd>
-                <dt>User</dt>
-                <dd>{profile.user}</dd>
-                <dt>Shell</dt>
-                <dd>terminal-portfolio</dd>
-                <dt>Schemes</dt>
-                <dd>{themeNames.length} installed</dd>
-              </Stats>
-            </GroupBox>
-          </>
-        )}
+              <GroupBox style={{ marginTop: 8 }}>
+                <GroupLegend>System</GroupLegend>
+                <Stats>
+                  <dt>Host</dt>
+                  <dd>{profile.host}</dd>
+                  <dt>User</dt>
+                  <dd>{profile.user}</dd>
+                  <dt>Shell</dt>
+                  <dd>terminal-portfolio</dd>
+                  <dt>Schemes</dt>
+                  <dd>{themeNames.length} installed</dd>
+                </Stats>
+              </GroupBox>
+            </>
+          )}
+        </ScrollArea>
       </TabPanel>
 
       <ButtonRow>

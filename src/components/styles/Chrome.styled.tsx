@@ -50,18 +50,59 @@ export const trackColor = (theme: DefaultTheme) => {
   return mix(c.face, c.faceHighlight, 0.5);
 };
 
-const ARROWS: Record<string, string> = {
-  up: "1,5.5 7,5.5 4,2",
-  down: "1,2.5 7,2.5 4,6",
-  left: "5.5,1 5.5,7 2,4",
-  right: "2.5,1 2.5,7 6,4",
+/**
+ * Scrollbar arrows, as the stepped 3-row triangles Win2k drew them: [x, y, w, h]
+ * rectangles on a 16x16 grid. Drawing them as a polygon instead leaves the
+ * diagonals anti-aliased into a grey smudge at this size.
+ */
+const ARROWS: Record<string, [number, number, number, number][]> = {
+  up: [
+    [7, 6, 2, 1],
+    [6, 7, 4, 1],
+    [5, 8, 6, 1],
+  ],
+  down: [
+    [5, 7, 6, 1],
+    [6, 8, 4, 1],
+    [7, 9, 2, 1],
+  ],
+  left: [
+    [6, 7, 1, 2],
+    [7, 6, 1, 4],
+    [8, 5, 1, 6],
+  ],
+  right: [
+    [9, 7, 1, 2],
+    [8, 6, 1, 4],
+    [7, 5, 1, 6],
+  ],
 };
 
 /** Scrollbar button glyph as an inline SVG, tinted to the chrome text colour. */
-export const arrowIcon = (color: string, dir: keyof typeof ARROWS) =>
-  `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpolygon points='${
-    ARROWS[dir]
-  }' fill='${color.replace("#", "%23")}'/%3E%3C/svg%3E")`;
+export const arrowIcon = (color: string, dir: keyof typeof ARROWS) => {
+  const rects = ARROWS[dir]
+    .map(
+      ([x, y, w, h]) =>
+        `%3Crect x='${x}' y='${y}' width='${w}' height='${h}'/%3E`
+    )
+    .join("");
+  return `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='${color.replace(
+    "#",
+    "%23"
+  )}'%3E${rects}%3C/svg%3E")`;
+};
+
+/** The 50% face/white stipple Win2k fills scrollbar troughs with. */
+export const ditherBg = css`
+  background-color: ${({ theme }) => chrome(theme).face};
+  background-image: ${({ theme }) => {
+    const l = chrome(theme).faceHighlight;
+    return `linear-gradient(45deg, ${l} 25%, transparent 25%, transparent 75%, ${l} 75%),
+      linear-gradient(45deg, ${l} 25%, transparent 25%, transparent 75%, ${l} 75%)`;
+  }};
+  background-size: 2px 2px;
+  background-position: 0 0, 1px 1px;
+`;
 
 /** Raised 3D border (window frames, buttons at rest). */
 export const bevelOut = css`
@@ -289,21 +330,34 @@ export const TabButton = styled.button<{ $active?: boolean }>`
   ${focusRing}
 `;
 
-/** The panel a tab strip sits on top of. */
+/** The panel a tab strip sits on top of. Scrolling belongs to the ScrollArea
+    inside it, so this only draws the raised frame. */
 export const TabPanel = styled.div`
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
-  overflow: auto;
-  padding: 0.75rem;
+  overflow: hidden;
   background: ${({ theme }) => chrome(theme).face};
   ${bevelOut}
 `;
 
+/** Viewport for a TabPanel's ScrollArea. */
+export const TabPanelBody = styled.div`
+  padding: 0.75rem;
+`;
+
 export const ListBox = styled.div`
-  overflow: auto;
-  padding: 2px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: ${({ theme }) => bodyColor(theme)};
   ${bevelIn}
+`;
+
+/** Viewport for a ListBox's ScrollArea. */
+export const ListBoxBody = styled.div`
+  padding: 2px;
 `;
 
 export const ListItem = styled.button<{ $selected?: boolean }>`

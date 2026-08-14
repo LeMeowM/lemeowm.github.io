@@ -25,6 +25,7 @@ import { blogPosts } from "../../utils/blog";
 import { Content, Tag, TagRow } from "../styles/BlogReader.styled";
 import { StatusCell } from "../styles/Chrome.styled";
 import FloatingWindow from "../desktop/FloatingWindow";
+import ScrollArea from "../desktop/ScrollArea";
 import { useWindows } from "../desktop/windowManager";
 import ChallengePanel, { type ChallengeData } from "./ChallengePanel";
 import { ChalBody, ChalPanel } from "../styles/ChallengePanel.styled";
@@ -129,7 +130,7 @@ const BlogPost: React.FC<Props> = ({ slug }) => {
             </>
           }
         >
-          <Content ref={contentRef}>
+          <ScrollArea viewportAs={Content} viewportRef={contentRef}>
             {post.tags.length > 0 && (
               <TagRow>
                 {post.tags.map(t => (
@@ -140,7 +141,7 @@ const BlogPost: React.FC<Props> = ({ slug }) => {
             <ReactMarkdown components={{ code: CodeBlock as any }}>
               {post.body}
             </ReactMarkdown>
-          </Content>
+          </ScrollArea>
         </FloatingWindow>
       )}
     </>

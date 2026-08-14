@@ -1,13 +1,15 @@
 import styled from "styled-components";
 
+/**
+ * The terminal's scrolling element. Overflow and the scrollbar itself are
+ * handled by the ScrollArea this is passed to as the viewport.
+ */
 export const Wrapper = styled.div`
   padding: 1.25rem;
   padding-top: 0.75rem;
 
   display: flex;
   flex-direction: column-reverse;
-  height: 100%;
-  overflow-y: auto;
 `;
 
 export const CmdNotFound = styled.div`

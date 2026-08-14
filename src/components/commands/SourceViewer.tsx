@@ -7,6 +7,7 @@ import { StatusCell } from "../styles/Chrome.styled";
 import { detectLang } from "../../utils/code";
 import { useReaderKeyboard } from "../../hooks/useReaderKeyboard";
 import FloatingWindow from "../desktop/FloatingWindow";
+import ScrollArea from "../desktop/ScrollArea";
 import { useWindows } from "../desktop/windowManager";
 
 const Breadcrumb = styled.div`
@@ -74,7 +75,7 @@ const SourceViewer: React.FC<Props> = ({ path, filename }) => {
             </>
           }
         >
-          <Content ref={contentRef}>
+          <ScrollArea viewportAs={Content} viewportRef={contentRef}>
             {code === null ? (
               <span>loading…</span>
             ) : (
@@ -92,7 +93,7 @@ const SourceViewer: React.FC<Props> = ({ path, filename }) => {
                 {code}
               </SyntaxHighlighter>
             )}
-          </Content>
+          </ScrollArea>
         </FloatingWindow>
       )}
     </>

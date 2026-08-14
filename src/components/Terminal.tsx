@@ -17,6 +17,7 @@ import { filesystem, resolvePath } from "../utils/filesystem";
 import { commandMeta, type CmdEntry } from "../commands/meta";
 import { useTerminalInput } from "../hooks/useTerminalInput";
 import ErrorBoundary from "./ErrorBoundary";
+import ScrollArea from "./desktop/ScrollArea";
 
 export type { CmdEntry } from "../commands/meta";
 
@@ -107,7 +108,11 @@ const Terminal: React.FC<TerminalProps> = ({
   };
 
   return (
-    <Wrapper ref={wrapperRef} data-testid="terminal-wrapper">
+    <ScrollArea
+      viewportAs={Wrapper}
+      viewportRef={wrapperRef}
+      viewportProps={{ "data-testid": "terminal-wrapper" }}
+    >
       {hints.length > 1 && (
         <div>
           {hints.map(hCmd => (
@@ -185,7 +190,7 @@ const Terminal: React.FC<TerminalProps> = ({
           </div>
         );
       })}
-    </Wrapper>
+    </ScrollArea>
   );
 };
 

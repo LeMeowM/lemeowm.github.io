@@ -3,9 +3,8 @@
 import styled from "styled-components";
 import { bevelIn } from "./Chrome.styled";
 
+/** Reader body. Scrolling is owned by the ScrollArea this sits inside. */
 export const Content = styled.div`
-  flex: 1;
-  overflow-y: auto;
   font-family: "IBM Plex Mono", monospace;
   font-size: 0.875rem;
   padding: 1rem 1.5rem;
