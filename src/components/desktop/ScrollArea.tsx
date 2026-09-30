@@ -20,6 +20,12 @@ import {
   chrome,
   ditherBg,
 } from "../styles/Chrome.styled";
+import {
+  detectConvention,
+  offsetFromTop,
+  ScrollConvention,
+  scrollTopFor,
+} from "./scrollGeometry";
 
 const BAR = 16; // px — bar thickness, as in Win2k
 const STEP = 48; // px — one arrow-button click
@@ -129,20 +135,6 @@ const Corner = styled.div`
   ${ditherBg}
 `;
 
-/**
- * `flex-direction: column-reverse` containers (the terminal) scroll from the
- * bottom up, and Firefox reports that as a negative scrollTop while Chrome uses
- * a positive one. Probe once, then convert everything to "distance from the
- * top" so the thumb maths is the same either way.
- */
-const probeNegative = (el: HTMLElement) => {
-  const original = el.scrollTop;
-  el.scrollTop = -1;
-  const negative = el.scrollTop < 0;
-  el.scrollTop = original;
-  return negative;
-};
-
 type Props = {
   /** Styled component supplying the scrolling element's own styles. */
   viewportAs?: React.ElementType;
@@ -162,12 +154,25 @@ const ScrollArea: React.FC<Props> = ({
   const vp = useRef<HTMLDivElement | null>(null);
   const vTrack = useRef<HTMLDivElement>(null);
   const hTrack = useRef<HTMLDivElement>(null);
-  const negative = useRef(false);
+  const convention = useRef<ScrollConvention | null>(null);
   const [m, setM] = useState<Metrics>(EMPTY);
 
   const setViewport = (node: HTMLDivElement | null) => {
     vp.current = node;
     if (viewportRef) viewportRef.current = node;
+  };
+
+  /**
+   * Which way this element numbers its scroll offsets. Resolved the first time
+   * it actually has something to scroll — before that every convention looks
+   * the same, and the terminal starts with nothing to scroll.
+   */
+  const resolveConvention = (el: HTMLDivElement): ScrollConvention => {
+    if (!convention.current) {
+      const reversed = getComputedStyle(el).flexDirection === "column-reverse";
+      convention.current = detectConvention(el, reversed);
+    }
+    return convention.current ?? "top";
   };
 
   /** Scroll offset from the top/left, whatever the browser reports. */
@@ -176,7 +181,7 @@ const ScrollArea: React.FC<Props> = ({
     if (!el) return 0;
     if (axis === "h") return el.scrollLeft;
     const max = el.scrollHeight - el.clientHeight;
-    return negative.current ? max + el.scrollTop : el.scrollTop;
+    return offsetFromTop(resolveConvention(el), el.scrollTop, max);
   };
 
   const scrollTo = (axis: Axis, to: number) => {
@@ -190,8 +195,7 @@ const ScrollArea: React.FC<Props> = ({
       return;
     }
     const max = el.scrollHeight - el.clientHeight;
-    const clamped = Math.max(0, Math.min(max, to));
-    el.scrollTop = negative.current ? clamped - max : clamped;
+    el.scrollTop = scrollTopFor(resolveConvention(el), to, max);
   };
 
   const measure = useCallback(() => {
@@ -225,9 +229,11 @@ const ScrollArea: React.FC<Props> = ({
   }, []);
 
   /**
-   * measure() reads scrollHeight/clientHeight, which forces layout. The
-   * terminal re-renders on every keystroke and each of those mutates the
-   * subtree, so coalesce every trigger into one measurement per frame.
+   * measure() reads scrollHeight/clientHeight, which forces layout, and the
+   * terminal mutates its subtree on every keystroke — so the repeating
+   * triggers below coalesce into one measurement per frame. Mount and
+   * bar-visibility changes measure synchronously instead: they happen once,
+   * and deferring them would leave a frame with the wrong bar on screen.
    */
   const frame = useRef(0);
   const schedule = useCallback(() => {
@@ -241,26 +247,33 @@ const ScrollArea: React.FC<Props> = ({
   useEffect(() => {
     const el = vp.current;
     if (!el) return;
-    negative.current = probeNegative(el);
-    schedule();
+    measure();
+    // Scrolling fires far too often to measure on each event, and the page is
+    // painting throughout, so that one is coalesced. Size and content changes
+    // are rare and decide whether a bar exists at all — measure those straight
+    // away rather than waiting for a frame that may not come.
     el.addEventListener("scroll", schedule, { passive: true });
-    const ro = new ResizeObserver(schedule);
+    const ro = new ResizeObserver(measure);
     ro.observe(el);
     // Terminal output and markdown images change the content, not the box.
-    const mo = new MutationObserver(schedule);
+    const mo = new MutationObserver(measure);
     mo.observe(el, { childList: true, subtree: true, characterData: true });
     return () => {
+      // Clearing the handle matters: schedule() treats a non-zero frame as
+      // "already pending", so a stale one left here would swallow every
+      // measurement after a remount (StrictMode does one on mount).
       cancelAnimationFrame(frame.current);
+      frame.current = 0;
       el.removeEventListener("scroll", schedule);
       ro.disconnect();
       mo.disconnect();
     };
-  }, [schedule]);
+  }, [measure, schedule]);
 
   // A track only exists once its bar is shown, so the first measurement of a
   // newly appeared bar has no track length to size the thumb against. Measure
   // once more when a bar appears or disappears to settle it.
-  useEffect(schedule, [schedule, m.vOn, m.hOn]);
+  useEffect(measure, [measure, m.vOn, m.hOn]);
 
   const hold = (step: () => void) => (e: React.PointerEvent) => {
     e.preventDefault();

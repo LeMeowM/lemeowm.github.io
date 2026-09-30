@@ -50,7 +50,7 @@ welcome screen, and the `email` / `cv` commands.
 export const profile: Profile = {
   name: "Hugo Noublanche",
   user: "visitor",              // shown as visitor@host:~$
-  host: "lemeowm.github.io",
+  host: "altmeow.cat",
   neofetchUser: "hugo",         // neofetch header only
   email: "hugo.noublanche@epfl.ch",
   github: "https://github.com/lemeowm",

@@ -11,7 +11,7 @@ import { Profile } from "./types";
 export const profile: Profile = {
   name: "Hugo Noublanche",
   user: "visitor",
-  host: "lemeowm.github.io",
+  host: "altmeow.cat",
   neofetchUser: "hugo",
   email: "hugo.noublanche@epfl.ch",
   github: "https://github.com/lemeowm",

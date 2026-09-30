@@ -12,7 +12,7 @@ export type Profile = {
   name: string;
   /** Username shown in the prompt, e.g. "visitor" in visitor@host:~$. */
   user: string;
-  /** Hostname shown in the prompt and banner, e.g. "lemeowm.github.io". */
+  /** Hostname shown in the prompt and banner, e.g. "altmeow.cat". */
   host: string;
   /** Username shown in the neofetch header (may differ from the prompt user). */
   neofetchUser: string;
